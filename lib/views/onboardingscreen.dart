@@ -78,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     width: currentIndex == index ? 20 : 10,
                     decoration: BoxDecoration(
                       color:
-                          currentIndex == index ? Colors.cyan : Colors.yellow,
+                          currentIndex == index ? Colors.blue : Colors.yellow,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -91,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             height: 50,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.cyan,
+              color: Colors.blue,
               borderRadius: BorderRadius.circular(10),
             ),
             child: TextButton(
@@ -106,7 +106,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   );
                 }
                 pageController.nextPage(
-                    duration: const Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 100),
                     curve: Curves.bounceIn);
               },
               child: Text(

@@ -7,7 +7,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // delayed and navigate to another page
   await Future.delayed(
-    const Duration(seconds: 2),
+    const Duration(seconds: 1),
   );
   FlutterNativeSplash.remove();
   runApp(const MyApp());
