@@ -9,8 +9,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
   final _formKey = GlobalKey<FormState>(); // Form key
   @override
@@ -116,7 +114,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 60,
                     child: TextFormField(
-                      // controller: _emailController,
                       style: inputText,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
@@ -146,7 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 60,
                     child: TextFormField(
-                      controller: _passwordController,
                       style: inputText,
                       obscureText: !_passwordVisible,
                       decoration: InputDecoration(
