@@ -1,3 +1,4 @@
+import 'package:easyshop/views/screens/auth/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -61,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
         color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold);
 
     // Padding for the entire screen
-    const EdgeInsets screenPadding = EdgeInsets.all(10.0);
+    const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: 10.0);
 
     // login text style
     TextStyle loginTextStyle = GoogleFonts.roboto(
@@ -85,6 +86,27 @@ class _LoginScreenState extends State<LoginScreen> {
       color: Colors.red,
     );
 
+// Email Validator
+    String? validateEmail(String? value) {
+      RegExp emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      if (value == null || value.isEmpty) {
+        return 'Please enter an email';
+      } else if (!emailRegExp.hasMatch(value)) {
+        return 'Enter a valid email';
+      }
+      return null;
+    }
+
+    // validation
+    String? validatePassword(String? value) {
+      if (value == null || value.isEmpty) {
+        return 'Please enter a password';
+      } else if (value.length < 8) {
+        return 'Password must be at least 8 characters';
+      }
+      return null;
+    }
+
     return Scaffold(
       backgroundColor: backgroundColor,
       body: SafeArea(
@@ -103,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: MediaQuery.of(context).size.height * 0.2,
                   ),
                   const SizedBox(height: 10),
-                  Text('Welcome back', style: welcomeTextStyle),
+                  Text('Welcome back!', style: welcomeTextStyle),
                   const SizedBox(height: 8),
                   Text(
                     'Discover limitless Choices and Unmatched Convenience.',
@@ -129,14 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         focusedErrorBorder: focusedBorder,
                         errorStyle: errorStyle,
                       ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Please enter your email address";
-                        } else if (!value.contains('@')) {
-                          return 'Please enter a valid email address';
-                        }
-                        return null;
-                      },
+                      validator: validateEmail,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -170,14 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                           )),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        } else if (value.length < 6) {
-                          return 'Password must be at least 6 characters long';
-                        }
-                        return null;
-                      },
+                      validator: validatePassword,
                     ),
                   ),
                   Align(
@@ -215,6 +223,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   OutlinedButton(
                     onPressed: () {
                       // Create account logic
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF8A9418),
