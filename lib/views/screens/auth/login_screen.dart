@@ -1,4 +1,5 @@
 import 'package:easyshop/views/screens/auth/register_screen.dart';
+import 'package:easyshop/views/screens/forgetPassword/forget_pass.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -193,6 +194,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextButton(
                       onPressed: () {
                         // Forgot password logic
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const ForgotPasswordScreen()),
+                        );
                       },
                       child: Text(
                         'Forget Password?',

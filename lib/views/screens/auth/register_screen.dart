@@ -1,8 +1,9 @@
 import "package:easyshop/views/screens/auth/login_screen.dart";
+import "package:easyshop/views/screens/privacy/privacy_policy.dart";
+import "package:easyshop/views/screens/privacy/terms.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
-import 'package:url_launcher/url_launcher.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -82,16 +83,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       color: Colors.red,
     );
 
-    // Validation
+    // Validation section
     // Username Validator
     String? validateUsername(String? value) {
       if (value == null || value.isEmpty) {
         return 'Please enter a username';
       }
-      return null; // Return null if the input is valid
+      return null;
     }
 
-// Email Validator
+    // Email Validator
     String? validateEmail(String? value) {
       RegExp emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
       if (value == null || value.isEmpty) {
@@ -102,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return null;
     }
 
-// Password Validator
+    // Password Validator
     String? validatePassword(String? value) {
       if (value == null || value.isEmpty) {
         return 'Please enter a password';
@@ -112,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return null;
     }
 
-// Confirm Password Validator
+    // Confirm Password Validator
     String? validateConfirmPassword(String? value) {
       if (value == null || value.isEmpty) {
         return 'Please confirm your password';
@@ -135,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Image.asset(
                     'assets/images/loginlogo1.png',
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -260,27 +261,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         TextSpan(
                           text: 'Privacy Policy',
                           //  add a recognizer here if you want to handle taps
-                          // Create privacy policy page/screen to display policy on screen
+
                           recognizer: TapGestureRecognizer()
-                            ..onTap = () async {
-                              const urlString = "https://www.imrith.com";
-                              final url = Uri.parse(urlString);
-                              if (await canLaunchUrl(url)) {
-                                await launchUrl(url);
-                              } else {
-                                throw 'Could not launch $url';
-                              }
+                            ..onTap = () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const PrivacyPolicyScreen(),
+                                ),
+                              );
                             },
                         ),
                         const TextSpan(
                           text: ' and ',
                           style: TextStyle(color: Colors.grey),
                         ),
-                        const TextSpan(
+                        TextSpan(
                           text: 'Terms of use',
-
-                          // You can add a recognizer here if you want to handle taps
-                          // Create privacy policy page/screen to display policy on screen
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const TermsOfUseScreen(),
+                                ),
+                              );
+                            },
                         ),
                       ],
                     ),
