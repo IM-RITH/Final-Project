@@ -20,10 +20,14 @@ class SendEmailScreen extends StatelessWidget {
     // forget pass text
     TextStyle subforgetpass = GoogleFonts.roboto(
       fontWeight: FontWeight.bold,
-      fontSize: 18,
+      fontSize: 16,
       color: Colors.white,
     );
-
+    TextStyle subforgetpass2 = GoogleFonts.roboto(
+      fontWeight: FontWeight.bold,
+      fontSize: 17,
+      color: Colors.white,
+    );
     // Padding for the entire screen
     const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: 20.0);
 
@@ -70,6 +74,12 @@ class SendEmailScreen extends StatelessWidget {
               Text(
                 'testing@gmail.com',
                 style: subforgetpass,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Your Account Security is Our Priority! We’ve sent you a secure link to safety change your password and keep your account protected.',
+                style: subforgetpass2,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 30),
