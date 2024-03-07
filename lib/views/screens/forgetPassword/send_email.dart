@@ -25,7 +25,7 @@ class SendEmailScreen extends StatelessWidget {
     );
     TextStyle subforgetpass2 = GoogleFonts.roboto(
       fontWeight: FontWeight.bold,
-      fontSize: 17,
+      fontSize: 16,
       color: Colors.white,
     );
     // Padding for the entire screen
@@ -84,7 +84,9 @@ class SendEmailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // resend function logic
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4F7ED9),
                   minimumSize: const Size(double.infinity, 60),

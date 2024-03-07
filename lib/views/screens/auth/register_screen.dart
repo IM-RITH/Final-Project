@@ -4,6 +4,7 @@ import "package:easyshop/views/screens/privacy/terms.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -123,221 +124,225 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return null;
     }
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 15.0,
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  const SizedBox(height: 10),
-                  Image.asset(
-                    'assets/images/loginlogo1.png',
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: MediaQuery.of(context).size.height * 0.2,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "Let's Create Your Account!",
-                    style: mainText,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  TextFormField(
-                    style: inputText,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.person_add_alt_sharp,
-                        color: Colors.white,
-                      ),
-                      labelText: 'Username',
-                      labelStyle: labelStyle,
-                      enabledBorder: inputBorder,
-                      focusedBorder: focusedBorder,
-                      errorBorder: inputBorder,
-                      focusedErrorBorder: focusedBorder,
-                      errorStyle: errorStyle,
+    return ScreenUtilInit(
+      designSize: const Size(360, 800),
+      builder: (context, child) => Scaffold(
+        backgroundColor: backgroundColor,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15.0,
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                    Image.asset(
+                      'assets/images/loginlogo1.png',
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.2,
                     ),
-                    validator: validateUsername,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    style: inputText,
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.mark_email_read_sharp,
-                        color: Colors.white,
-                      ),
-                      labelText: 'Email',
-                      labelStyle: labelStyle,
-                      enabledBorder: inputBorder,
-                      focusedBorder: focusedBorder,
-                      errorBorder: inputBorder,
-                      focusedErrorBorder: focusedBorder,
-                      errorStyle: errorStyle,
+                    const SizedBox(height: 20),
+                    Text(
+                      "Let's Create Your Account!",
+                      style: mainText,
+                      textAlign: TextAlign.center,
                     ),
-                    validator: validateEmail,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    style: inputText,
-                    controller: _passwordController,
-                    obscureText: !_passwordVisible,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.password_sharp,
-                        color: Colors.white,
-                      ),
-                      labelText: 'Password',
-                      labelStyle: labelStyle,
-                      enabledBorder: inputBorder,
-                      focusedBorder: focusedBorder,
-                      errorBorder: inputBorder,
-                      focusedErrorBorder: focusedBorder,
-                      errorStyle: errorStyle,
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                        icon: Icon(_passwordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        color: Colors.white,
-                      ),
-                    ),
-                    validator: validatePassword,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    style: inputText,
-                    // controller: _passwordController,
-                    obscureText: !_confirmPasswordVisible,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.password_sharp,
-                        color: Colors.white,
-                      ),
-                      labelText: 'Confirm Password',
-                      labelStyle: labelStyle,
-                      enabledBorder: inputBorder,
-                      focusedBorder: focusedBorder,
-                      errorBorder: inputBorder,
-                      focusedErrorBorder: focusedBorder,
-                      errorStyle: errorStyle,
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _confirmPasswordVisible = !_confirmPasswordVisible;
-                          });
-                        },
-                        icon: Icon(_confirmPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        color: Colors.white,
-                      ),
-                    ),
-                    validator: validateConfirmPassword,
-                  ),
-                  const SizedBox(height: 8),
-                  RichText(
-                    // textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: const TextStyle(fontSize: 15),
-                      children: <TextSpan>[
-                        const TextSpan(
-                          text: 'By signing up, you agree to our ',
-                          style: TextStyle(color: Colors.grey),
+                    const SizedBox(height: 24),
+                    TextFormField(
+                      style: inputText,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          Icons.person_add_alt_sharp,
+                          color: Colors.white,
                         ),
-                        TextSpan(
-                          text: 'Privacy Policy',
-                          //  add a recognizer here if you want to handle taps
-
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const PrivacyPolicyScreen(),
-                                ),
-                              );
-                            },
-                        ),
-                        const TextSpan(
-                          text: ' and ',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        TextSpan(
-                          text: 'Terms of use',
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const TermsOfUseScreen(),
-                                ),
-                              );
-                            },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4F7ED9),
-                      minimumSize: const Size(double.infinity, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        labelText: 'Username',
+                        labelStyle: labelStyle,
+                        enabledBorder: inputBorder,
+                        focusedBorder: focusedBorder,
+                        errorBorder: inputBorder,
+                        focusedErrorBorder: focusedBorder,
+                        errorStyle: errorStyle,
                       ),
+                      validator: validateUsername,
                     ),
-                    onPressed: () {
-                      // Handle button press
-                      if (_formKey.currentState!.validate()) {}
-                    },
-                    child: Text(
-                      'Create Account',
-                      style: createAccountTextStyle,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Already have an account?",
-                          style: alreadyTextStyle,
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      style: inputText,
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          Icons.mark_email_read_sharp,
+                          color: Colors.white,
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
-                              ),
-                            );
+                        labelText: 'Email',
+                        labelStyle: labelStyle,
+                        enabledBorder: inputBorder,
+                        focusedBorder: focusedBorder,
+                        errorBorder: inputBorder,
+                        focusedErrorBorder: focusedBorder,
+                        errorStyle: errorStyle,
+                      ),
+                      validator: validateEmail,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      style: inputText,
+                      controller: _passwordController,
+                      obscureText: !_passwordVisible,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          Icons.password_sharp,
+                          color: Colors.white,
+                        ),
+                        labelText: 'Password',
+                        labelStyle: labelStyle,
+                        enabledBorder: inputBorder,
+                        focusedBorder: focusedBorder,
+                        errorBorder: inputBorder,
+                        focusedErrorBorder: focusedBorder,
+                        errorStyle: errorStyle,
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
                           },
-                          child: Text(
-                            " Login",
-                            style: loginTextStyle,
-                          ),
+                          icon: Icon(_passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          color: Colors.white,
                         ),
-                      ],
+                      ),
+                      validator: validatePassword,
                     ),
-                  )
-                ],
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      style: inputText,
+                      // controller: _passwordController,
+                      obscureText: !_confirmPasswordVisible,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          Icons.password_sharp,
+                          color: Colors.white,
+                        ),
+                        labelText: 'Confirm Password',
+                        labelStyle: labelStyle,
+                        enabledBorder: inputBorder,
+                        focusedBorder: focusedBorder,
+                        errorBorder: inputBorder,
+                        focusedErrorBorder: focusedBorder,
+                        errorStyle: errorStyle,
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _confirmPasswordVisible =
+                                  !_confirmPasswordVisible;
+                            });
+                          },
+                          icon: Icon(_confirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          color: Colors.white,
+                        ),
+                      ),
+                      validator: validateConfirmPassword,
+                    ),
+                    const SizedBox(height: 8),
+                    RichText(
+                      // textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: const TextStyle(fontSize: 15),
+                        children: <TextSpan>[
+                          const TextSpan(
+                            text: 'By signing up, you agree to our ',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          TextSpan(
+                            text: 'Privacy Policy',
+                            //  add a recognizer here if you want to handle taps
+
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const PrivacyPolicyScreen(),
+                                  ),
+                                );
+                              },
+                          ),
+                          const TextSpan(
+                            text: ' and ',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          TextSpan(
+                            text: 'Terms of use',
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const TermsOfUseScreen(),
+                                  ),
+                                );
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4F7ED9),
+                        minimumSize: const Size(double.infinity, 60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        // Handle button press
+                        if (_formKey.currentState!.validate()) {}
+                      },
+                      child: Text(
+                        'Create Account',
+                        style: createAccountTextStyle,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Already have an account?",
+                            style: alreadyTextStyle,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginScreen(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              " Login",
+                              style: loginTextStyle,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
