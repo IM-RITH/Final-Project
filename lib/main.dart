@@ -1,8 +1,23 @@
+import 'dart:io';
+
 import 'package:easyshop/views/onboardingscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Platform.isAndroid
+      ? await Firebase.initializeApp(
+          options: const FirebaseOptions(
+              apiKey: "AIzaSyDVTeq4qpYJhD3o6duNs1rb3WxeKe0xC_Y",
+              appId: "1:726625939599:android:e20f4b92034ea6738b00fa",
+              messagingSenderId: "726625939599",
+              projectId: "easyshop-project-efff5",
+              storageBucket: "gs://easyshop-project-efff5.appspot.com"),
+        )
+      : await Firebase.initializeApp();
+
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // delayed and navigate to another page

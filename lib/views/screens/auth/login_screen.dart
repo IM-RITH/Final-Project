@@ -14,6 +14,16 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
   final _formKey = GlobalKey<FormState>();
 
+  // complete mail suggest... auto mail complete
+  final List<String> _emailSuggestions = [
+    '@gmail.com',
+    '@outlook.com',
+    '@yahoo.com',
+    '@hotmail.com',
+    '@icloud.com',
+    '@protonmail.com',
+  ];
+
   @override
   Widget build(BuildContext context) {
     // Styles for text
@@ -137,23 +147,47 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
                   SizedBox(
                     height: 60,
-                    child: TextFormField(
-                      style: inputText,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(
-                          Icons.mark_email_read_sharp,
-                          color: Colors.white,
-                        ),
-                        labelText: 'Email Address',
-                        labelStyle: labelStyle,
-                        enabledBorder: inputBorder,
-                        focusedBorder: focusedBorder,
-                        errorBorder: inputBorder,
-                        focusedErrorBorder: focusedBorder,
-                        errorStyle: errorStyle,
-                      ),
-                      validator: validateEmail,
+                    child: Autocomplete<String>(
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        if (textEditingValue.text == '') {
+                          return const Iterable<String>.empty();
+                        }
+                        return _emailSuggestions.map((String option) {
+                          final String email =
+                              textEditingValue.text.toLowerCase() + option;
+                          return email;
+                        });
+                      },
+                      fieldViewBuilder: (
+                        BuildContext context,
+                        TextEditingController textEditingController,
+                        FocusNode focusNode,
+                        VoidCallback onFieldSubmitted,
+                      ) {
+                        return TextFormField(
+                          controller: textEditingController,
+                          focusNode: focusNode,
+                          style: inputText,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.mark_email_read_sharp,
+                              color: Colors.white,
+                            ),
+                            labelText: 'Email Address',
+                            labelStyle: labelStyle,
+                            enabledBorder: inputBorder,
+                            focusedBorder: focusedBorder,
+                            errorBorder: inputBorder,
+                            focusedErrorBorder: focusedBorder,
+                            errorStyle: errorStyle,
+                          ),
+                          validator: validateEmail,
+                          onFieldSubmitted: (String value) {
+                            onFieldSubmitted();
+                          },
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),

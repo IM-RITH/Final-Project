@@ -20,6 +20,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final List<String> _emailSuggestions = [
+    '@gmail.com',
+    '@outlook.com',
+    '@yahoo.com',
+    '@hotmail.com',
+    '@icloud.com',
+    '@protonmail.com',
+  ];
+
   @override
   Widget build(BuildContext context) {
     // background color
@@ -125,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     return ScreenUtilInit(
-      designSize: const Size(360, 800),
+      designSize: const Size(430, 932),
       builder: (context, child) => Scaffold(
         backgroundColor: backgroundColor,
         body: SafeArea(
@@ -170,24 +179,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       validator: validateUsername,
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
-                      style: inputText,
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(
-                          Icons.mark_email_read_sharp,
-                          color: Colors.white,
-                        ),
-                        labelText: 'Email',
-                        labelStyle: labelStyle,
-                        enabledBorder: inputBorder,
-                        focusedBorder: focusedBorder,
-                        errorBorder: inputBorder,
-                        focusedErrorBorder: focusedBorder,
-                        errorStyle: errorStyle,
+                    SizedBox(
+                      child: Autocomplete<String>(
+                        optionsBuilder: (TextEditingValue textEditingValue) {
+                          if (textEditingValue.text == '') {
+                            return const Iterable<String>.empty();
+                          }
+                          final userInput = textEditingValue.text;
+                          if (userInput.contains('@')) {
+                            final atSignIndex = userInput.indexOf('@');
+                            final userInputPrefix =
+                                userInput.substring(0, atSignIndex + 1);
+                            final userInputSuffix =
+                                userInput.substring(atSignIndex);
+                            return _emailSuggestions
+                                .where(
+                                  (String option) => option
+                                      .contains(userInputSuffix.toLowerCase()),
+                                )
+                                .map((String option) =>
+                                    userInputPrefix + option.substring(1));
+                          } else {
+                            return _emailSuggestions
+                                .map((String option) => userInput + option);
+                          }
+                        },
+                        fieldViewBuilder: (
+                          BuildContext context,
+                          TextEditingController textEditingController,
+                          FocusNode focusNode,
+                          VoidCallback onFieldSubmitted,
+                        ) {
+                          return TextFormField(
+                            controller: textEditingController,
+                            focusNode: focusNode,
+                            style: inputText,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(
+                                Icons.mark_email_read_sharp,
+                                color: Colors.white,
+                              ),
+                              labelText: 'Email',
+                              labelStyle: labelStyle,
+                              enabledBorder: inputBorder,
+                              focusedBorder: focusedBorder,
+                              errorBorder: inputBorder,
+                              focusedErrorBorder: focusedBorder,
+                              errorStyle: errorStyle,
+                            ),
+                            validator: validateEmail,
+                            onFieldSubmitted: (String value) {
+                              onFieldSubmitted();
+                            },
+                          );
+                        },
+                        onSelected: (String selection) {
+                          _emailController.text = selection;
+                        },
                       ),
-                      validator: validateEmail,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
