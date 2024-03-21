@@ -1,10 +1,15 @@
+import "dart:typed_data";
+
+import "package:easyshop/controller/auth_controller.dart";
 import "package:easyshop/views/screens/auth/login_screen.dart";
 import "package:easyshop/views/screens/privacy/privacy_policy.dart";
 import "package:easyshop/views/screens/privacy/terms.dart";
+import "package:flutter/cupertino.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import "package:flutter_screenutil/flutter_screenutil.dart";
+import "package:image_picker/image_picker.dart";
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -19,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
 
   final List<String> _emailSuggestions = [
     '@gmail.com',
@@ -28,6 +34,85 @@ class _RegisterScreenState extends State<RegisterScreen> {
     '@icloud.com',
     '@protonmail.com',
   ];
+  final AuthController _authController = AuthController();
+  Uint8List? _image;
+  // store file extension
+  String? fileExtension;
+
+  // select profile image
+  selectProfile() async {
+    var img = await _authController.pickProfile(ImageSource.gallery);
+    if (img != null) {
+      setState(() {
+        _image = img['imageData'];
+        fileExtension = img['fileExtension'];
+      });
+    }
+  }
+
+  // capture image
+  captureProfile() async {
+    var img = await _authController.pickProfile(ImageSource.camera);
+    if (img != null) {
+      setState(() {
+        _image = img['imageData'];
+        fileExtension = img['fileExtension'];
+      });
+    }
+  }
+
+  //avoid memoryleaks
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _usernameController.dispose();
+    super.dispose();
+  }
+
+  // show message to verify email
+  void showMessage(String message) {
+    final messenger = ScaffoldMessenger.of(context);
+    final banner = MaterialBanner(
+      content: Text(message),
+      backgroundColor: Colors.blue,
+      contentTextStyle: const TextStyle(color: Colors.white),
+      actions: [
+        TextButton(
+          child: const Text('DISMISS', style: TextStyle(color: Colors.white)),
+          onPressed: () {
+            messenger.hideCurrentMaterialBanner();
+          },
+        ),
+      ],
+    );
+
+    messenger.showMaterialBanner(banner);
+  }
+
+  // loading
+  void showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // User must not be able to dismiss the dialog by tapping outside of it
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text("Creating account..."),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       color: Colors.white,
     );
 
-// Already have an account text stye
+    // Already have an account text stye
     TextStyle alreadyTextStyle = GoogleFonts.roboto(
       fontSize: 17,
       fontWeight: FontWeight.bold,
@@ -149,10 +234,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                    Image.asset(
-                      'assets/images/loginlogo1.png',
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      height: MediaQuery.of(context).size.height * 0.2,
+                    Center(
+                      child: Stack(
+                        children: [
+                          _image == null
+                              ? const CircleAvatar(
+                                  backgroundColor: Colors.grey,
+                                  radius: 65,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 40,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : CircleAvatar(
+                                  backgroundImage: MemoryImage(_image!),
+                                  radius: 65,
+                                ),
+                          Positioned(
+                            right: 0,
+                            top: 90,
+                            child: IconButton(
+                              onPressed: () {
+                                selectProfile();
+                              },
+                              icon: const Icon(
+                                CupertinoIcons.photo_fill,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -162,6 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 24),
                     TextFormField(
+                      controller: _usernameController,
                       style: inputText,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(
@@ -358,7 +472,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       onPressed: () {
                         // Handle button press
-                        if (_formKey.currentState!.validate()) {}
+                        if (_formKey.currentState!.validate()) {
+                          String username = _usernameController.text;
+                          String email = _emailController.text;
+                          String password = _passwordController.text;
+
+                          _authController
+                              .createNewUser(username, email, password, _image,
+                                  fileExtension)
+                              .then((response) {
+                            if (response ==
+                                "Create success. Please verify your email") {
+                              // Show the message to the user
+                              showMessage(
+                                  "Please verify your email. We've sent you a verification mail.");
+
+                              Future.delayed(const Duration(seconds: 3), () {
+                                // Navigate to the LoginScreen
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()),
+                                );
+                              });
+                            } else {
+                              showMessage(response);
+                            }
+                          }).catchError((error) {
+                            showMessage(
+                                "An error occurred. Please try again later.");
+                          });
+                        }
                       },
                       child: Text(
                         'Create Account',

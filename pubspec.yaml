@@ -37,10 +37,11 @@ dependencies:
   flutter_native_splash: ^2.3.11
   google_fonts: ^6.1.0
   flutter_screenutil: ^5.9.0
-  cloud_firestore: ^4.15.9
   firebase_core: ^2.27.1
+  cloud_firestore: ^4.15.9
   firebase_auth: ^4.17.9
   firebase_storage: ^11.6.10
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:
