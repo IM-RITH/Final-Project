@@ -1,3 +1,5 @@
+import "package:easyshop/controller/auth_controller.dart";
+import 'package:easyshop/views/screens/HomeScreen/homescreen.dart';
 import 'package:easyshop/views/screens/auth/register_screen.dart';
 import 'package:easyshop/views/screens/forgetPassword/forget_pass.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailContoller = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AuthController _authController = AuthController();
 
   // complete mail suggest... auto mail complete
   final List<String> _emailSuggestions = [
@@ -23,6 +28,85 @@ class _LoginScreenState extends State<LoginScreen> {
     '@icloud.com',
     '@protonmail.com',
   ];
+
+  // clean up controller when widget disposed
+  @override
+  void dispose() {
+    _emailContoller.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // login function
+  void loginUser() async {
+    if (_formKey.currentState!.validate()) {
+      // Show loading dialog or indicator before the request
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      String email = _emailContoller.text.trim();
+      String password = _passwordController.text.trim();
+
+      String response = await _authController.loginUser(email, password);
+
+      // Dismiss the loading dialog
+      if (mounted) Navigator.pop(context);
+      // Define the style for the SnackBar content
+      TextStyle snackBarTextStyle = GoogleFonts.roboto(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      );
+      // Determine the color and icon based on the response
+      Color snackBarColor =
+          response == "Login successful" ? Colors.green : Colors.red;
+      IconData snackBarIcon =
+          response == "Login successful" ? Icons.check_circle : Icons.error;
+
+      // Handle response with a styled SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(snackBarIcon, color: Colors.white),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    response,
+                    style: snackBarTextStyle,
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: snackBarColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            margin: const EdgeInsets.all(10),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          ),
+        );
+      }
+      // Navigate to the home screen
+      if (response == "Login successful") {
+        Future.delayed(const Duration(seconds: 1), () {
+          // Navigate to the LoginScreen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         VoidCallback onFieldSubmitted,
                       ) {
                         return TextFormField(
-                          controller: textEditingController,
+                          controller: _emailContoller,
                           focusNode: focusNode,
                           style: inputText,
                           keyboardType: TextInputType.emailAddress,
@@ -194,6 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 60,
                     child: TextFormField(
+                      controller: _passwordController,
                       style: inputText,
                       obscureText: !_passwordVisible,
                       decoration: InputDecoration(
@@ -245,9 +330,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // If the form is valid, proceed with the login logic
-                      }
+                      loginUser();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4F7ED9),

@@ -94,4 +94,35 @@ class AuthController {
     }
     return response;
   }
+
+// Loin function
+  Future<String> loginUser(String email, String password) async {
+    String response = "Something went wrong! Please try again.";
+
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      User? user = userCredential.user;
+
+      if (user != null && !user.emailVerified) {
+        // If user's email is not verified
+        response = "Please verify your email before login.";
+      } else {
+        // Successful login
+        response = "Login successful";
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found") {
+        response = "Not found user";
+      } else if (e.code == "wrong-password") {
+        response = "Wrong password";
+      } else {
+        response = e.message ?? "An error occurred";
+      }
+    } catch (e) {
+      response = e.toString();
+    }
+
+    return response;
+  }
 }

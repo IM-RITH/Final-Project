@@ -94,8 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void showLoadingDialog() {
     showDialog(
       context: context,
-      barrierDismissible:
-          false, // User must not be able to dismiss the dialog by tapping outside of it
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return const Dialog(
           child: Padding(
@@ -470,9 +469,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         // Handle button press
                         if (_formKey.currentState!.validate()) {
+                          //dismiss keyboard
+                          FocusScope.of(context).unfocus();
                           String username = _usernameController.text;
                           String email = _emailController.text;
                           String password = _passwordController.text;
@@ -483,11 +484,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               .then((response) {
                             if (response ==
                                 "Create success. Please verify your email") {
+                              // show dialog
+                              showLoadingDialog();
                               // Show the message to the user
                               showMessage(
                                   "Please verify your email. We've sent you a verification mail.");
 
-                              Future.delayed(const Duration(seconds: 3), () {
+                              Future.delayed(const Duration(seconds: 2), () {
                                 // Navigate to the LoginScreen
                                 Navigator.pushReplacement(
                                   context,
