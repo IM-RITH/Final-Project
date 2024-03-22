@@ -448,12 +448,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const PrivacyPolicyScreen(),
-                                  ),
+                                Get.to(
+                                  () => const PrivacyPolicyScreen(),
                                 );
                               },
                           ),
@@ -465,12 +461,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             text: 'Terms of use',
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const TermsOfUseScreen(),
-                                  ),
+                                Get.to(
+                                  () => const TermsOfUseScreen(),
                                 );
                               },
                           ),
@@ -505,11 +497,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginScreen(),
-                                ),
+                              Get.to(
+                                () => const LoginScreen(),
                               );
                             },
                             child: Text(

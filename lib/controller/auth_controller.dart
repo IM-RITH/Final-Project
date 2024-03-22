@@ -125,4 +125,17 @@ class AuthController {
 
     return response;
   }
+
+  // reset password function
+   Future<String> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return "Password reset email sent. Please check your inbox.";
+    } on FirebaseAuthException catch (e) {
+      return e.message ?? "An error occurred while sending the reset email.";
+    } catch (e) {
+      return "An unexpected error occurred.";
+    }
+  }
+
 }

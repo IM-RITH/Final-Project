@@ -1,12 +1,17 @@
+import 'package:easyshop/controller/auth_controller.dart';
 import 'package:easyshop/views/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 class SendEmailScreen extends StatelessWidget {
-  const SendEmailScreen({Key? key}) : super(key: key);
+  final String email;
+
+  const SendEmailScreen({Key? key, required this.email}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final AuthController authController = AuthController();
     // background color
     const Color backgroundColor = Color(0xFF322F2F);
 
@@ -72,7 +77,7 @@ class SendEmailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                'testing@gmail.com',
+                email,
                 style: subforgetpass,
                 textAlign: TextAlign.center,
               ),
@@ -84,8 +89,42 @@ class SendEmailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {
-                  // resend function logic
+                onPressed: () async {
+                  // resend function
+                  Get.dialog(
+                    Dialog(
+                      backgroundColor: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(width: 20),
+                            Text(
+                              'Resending email...',
+                              style: submitTextStyle.copyWith(
+                                  color: Colors.blueGrey),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    barrierDismissible: false,
+                  );
+                  String result =
+                      await authController.sendPasswordResetEmail(email);
+                  Get.back();
+                  Get.snackbar(
+                    "Password Reset Email",
+                    result,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.grey[900]!,
+                    colorText: Colors.white,
+                    margin: const EdgeInsets.all(10),
+                    borderRadius: 10,
+                    snackStyle: SnackStyle.FLOATING,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4F7ED9),
@@ -102,11 +141,7 @@ class SendEmailScreen extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
+                  Get.offAll(() => const LoginScreen());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF8A9418),

@@ -374,12 +374,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextButton(
                       onPressed: () {
                         // Forgot password logic
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const ForgotPasswordScreen()),
-                        );
+                        Get.off(() => const ForgotPasswordScreen());
                       },
                       child: Text(
                         'Forget Password?',
@@ -408,11 +403,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   OutlinedButton(
                     onPressed: () {
                       // Create account logic
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
-                          ));
+                      Get.to(
+                        () => const RegisterScreen(),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF8A9418),

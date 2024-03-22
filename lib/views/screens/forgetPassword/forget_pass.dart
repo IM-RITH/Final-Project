@@ -1,6 +1,8 @@
+import 'package:easyshop/controller/auth_controller.dart';
 import 'package:easyshop/views/screens/forgetPassword/send_email.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -9,6 +11,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController emailController = TextEditingController();
+    final AuthController authController = AuthController();
 
     // Email validation logic
     String? validateEmail(String? value) {
@@ -146,40 +149,52 @@ class ForgotPasswordScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      // Show the loading dialog
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          return Dialog(
-                            backgroundColor: Colors.white,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const CircularProgressIndicator(),
-                                  const SizedBox(width: 20),
-                                  Text(
-                                    'Processing Data',
-                                    style: submitTextStyle.copyWith(
-                                        color: Colors.blueGrey),
-                                  ),
-                                ],
-                              ),
+                      // Show a loading dialog
+                      Get.dialog(
+                        Dialog(
+                          backgroundColor: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const CircularProgressIndicator(),
+                                const SizedBox(width: 20),
+                                Text(
+                                  'Processing Data',
+                                  style: submitTextStyle.copyWith(
+                                      color: Colors.blueGrey),
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                      );
-                      Future.delayed(const Duration(seconds: 2), () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const SendEmailScreen(),
                           ),
+                        ),
+                        barrierDismissible: false,
+                      );
+
+                      // Send password reset email
+                      String result = await authController
+                          .sendPasswordResetEmail(emailController.text);
+
+                      // Close the loading dialog
+                      Get.back();
+
+                      // Use Get.snackbar to show the result
+                      if (result ==
+                          "Password reset email sent. Please check your inbox.") {
+                        Get.to(
+                            () => SendEmailScreen(email: emailController.text));
+                      } else {
+                        Get.snackbar(
+                          "Error", // Title
+                          result, // Message
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
                         );
-                      });
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
