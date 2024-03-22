@@ -55,7 +55,7 @@ class SendEmailScreen extends StatelessWidget {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Get.back();
                 },
                 icon: const Icon(
                   Icons.arrow_back,

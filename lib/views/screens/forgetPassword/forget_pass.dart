@@ -1,4 +1,5 @@
 import 'package:easyshop/controller/auth_controller.dart';
+import 'package:easyshop/views/screens/auth/login_screen.dart';
 import 'package:easyshop/views/screens/forgetPassword/send_email.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -102,7 +103,9 @@ class ForgotPasswordScreen extends StatelessWidget {
               children: <Widget>[
                 IconButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Get.off(
+                      () => const LoginScreen(),
+                    );
                   },
                   icon: const Icon(
                     Icons.arrow_back,
@@ -188,8 +191,8 @@ class ForgotPasswordScreen extends StatelessWidget {
                             () => SendEmailScreen(email: emailController.text));
                       } else {
                         Get.snackbar(
-                          "Error", // Title
-                          result, // Message
+                          "Error",
+                          result,
                           snackPosition: SnackPosition.BOTTOM,
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
