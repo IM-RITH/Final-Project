@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import "package:geolocator/geolocator.dart";
+import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -15,32 +15,48 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  ); // google headquarter
+  CameraPosition? _initialCameraPosition;
 
-  late Position currentLocation;
-  // get user current location
-  getUserCurrentLocation() async {
-    await Geolocator.checkPermission();
-    await Geolocator.requestPermission();
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.bestForNavigation,
-      forceAndroidLocationManager: true,
-    );
-    currentLocation = position;
+  @override
+  void initState() {
+    super.initState();
+    _determinePosition().then((position) {
+      setState(() {
+        _initialCameraPosition = CameraPosition(
+          target: LatLng(position.latitude, position.longitude),
+          zoom: 14.4746,
+        );
+      });
+    }).catchError((e) {
+      Get.snackbar("Location Error", "Failed to get current location: $e");
+    });
+  }
 
-    // create variable to store latitude and longitude
-    LatLng latPos = LatLng(position.latitude, position.longitude);
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-    // set the map's initial camera position to the user's current location
-    CameraPosition cameraTarget = CameraPosition(target: latPos, zoom: 20);
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
 
-    // move the map's camera to the new CameraPosition
-    mapController.moveCamera(CameraUpdate.newCameraPosition(cameraTarget));
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -51,19 +67,28 @@ class _MapScreenState extends State<MapScreen> {
       fontWeight: FontWeight.bold,
     );
 
+    // Show loading indicator until the initial camera position is determined
+    if (_initialCameraPosition == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       body: Stack(
         children: [
           GoogleMap(
             myLocationButtonEnabled: true,
             myLocationEnabled: true,
-            padding: const EdgeInsets.only(bottom: 100),
             mapType: MapType.normal,
-            initialCameraPosition: _kGooglePlex,
+            initialCameraPosition: _initialCameraPosition!,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
               mapController = controller;
-              getUserCurrentLocation();
+              // Once mapController is available, move the camera to the current position
+              if (_initialCameraPosition != null) {
+                mapController!.animateCamera(
+                  CameraUpdate.newCameraPosition(_initialCameraPosition!),
+                );
+              }
             },
           ),
           Positioned(
