@@ -10,6 +10,7 @@ import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
 import "package:flutter_screenutil/flutter_screenutil.dart";
 import "package:image_picker/image_picker.dart";
+import 'package:get/get.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -70,47 +71,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  // show message to verify email
-  void showMessage(String message) {
-    final messenger = ScaffoldMessenger.of(context);
-    final banner = MaterialBanner(
-      content: Text(message),
-      backgroundColor: Colors.blue,
-      contentTextStyle: const TextStyle(color: Colors.white),
-      actions: [
-        TextButton(
-          child: const Text('DISMISS', style: TextStyle(color: Colors.white)),
-          onPressed: () {
-            messenger.hideCurrentMaterialBanner();
-          },
-        ),
-      ],
-    );
+  // signup function
+  // signup function
+  void _signUpUser() async {
+    if (_formKey.currentState!.validate()) {
+      // Show loading dialog or indicator before the request
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+      //dismiss keyboard
+      FocusScope.of(context).unfocus();
+      await Future.delayed(const Duration(seconds: 1), () {
+        // Dismiss the loading dialog if it's open
+        if (Get.isDialogOpen ?? false) Get.back();
+      });
 
-    messenger.showMaterialBanner(banner);
-  }
+      String username = _usernameController.text;
+      String email = _emailController.text;
+      String password = _passwordController.text;
 
-  // loading
-  void showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Text("Creating account..."),
-              ],
-            ),
-          ),
+      _authController
+          .createNewUser(username, email, password, _image, fileExtension)
+          .then((response) {
+        if (response == "Create success. Please verify your email") {
+          Get.snackbar(
+            "Account Created",
+            "Please verify your email. We've sent you a verification mail.",
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.blue,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 3),
+          );
+          Future.delayed(const Duration(seconds: 2), () {
+            // Navigate to the LoginScreen
+            Get.to(const LoginScreen());
+          });
+        } else {
+          Get.snackbar(
+            "Error",
+            response,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 3),
+          );
+        }
+      }).catchError((error) {
+        Get.snackbar(
+          "Error",
+          "An error occurred. Please try again later.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
         );
-      },
-    );
+      });
+    }
   }
 
   @override
@@ -118,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // background color
     const Color backgroundColor = Color(0xFF322F2F);
 
-// main text
+    // main text
     TextStyle mainText = GoogleFonts.roboto(
       color: Colors.white,
       fontSize: 24,
@@ -470,43 +487,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        // Handle button press
-                        if (_formKey.currentState!.validate()) {
-                          //dismiss keyboard
-                          FocusScope.of(context).unfocus();
-                          String username = _usernameController.text;
-                          String email = _emailController.text;
-                          String password = _passwordController.text;
-
-                          _authController
-                              .createNewUser(username, email, password, _image,
-                                  fileExtension)
-                              .then((response) {
-                            if (response ==
-                                "Create success. Please verify your email") {
-                              // show dialog
-                              showLoadingDialog();
-                              // Show the message to the user
-                              showMessage(
-                                  "Please verify your email. We've sent you a verification mail.");
-
-                              Future.delayed(const Duration(seconds: 2), () {
-                                // Navigate to the LoginScreen
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreen()),
-                                );
-                              });
-                            } else {
-                              showMessage(response);
-                            }
-                          }).catchError((error) {
-                            showMessage(
-                                "An error occurred. Please try again later.");
-                          });
-                        }
+                        _signUpUser();
                       },
                       child: Text(
                         'Create Account',

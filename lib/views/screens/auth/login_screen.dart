@@ -1,9 +1,10 @@
 import "package:easyshop/controller/auth_controller.dart";
-import 'package:easyshop/views/screens/HomeScreen/homescreen.dart';
 import 'package:easyshop/views/screens/auth/register_screen.dart';
 import 'package:easyshop/views/screens/forgetPassword/forget_pass.dart';
+import 'package:easyshop/views/screens/map/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -41,10 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void loginUser() async {
     if (_formKey.currentState!.validate()) {
       // Show loading dialog or indicator before the request
-      showDialog(
-        context: context,
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
         barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
       String email = _emailContoller.text.trim();
@@ -53,57 +53,117 @@ class _LoginScreenState extends State<LoginScreen> {
       String response = await _authController.loginUser(email, password);
 
       // Dismiss the loading dialog
-      if (mounted) Navigator.pop(context);
-      // Define the style for the SnackBar content
-      TextStyle snackBarTextStyle = GoogleFonts.roboto(
-        color: Colors.white,
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-      );
+      if (Get.isDialogOpen ?? false) Get.back();
+
       // Determine the color and icon based on the response
       Color snackBarColor =
           response == "Login successful" ? Colors.green : Colors.red;
       IconData snackBarIcon =
           response == "Login successful" ? Icons.check_circle : Icons.error;
 
-      // Handle response with a styled SnackBar
-      if (mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(snackBarIcon, color: Colors.white),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    response,
-                    style: snackBarTextStyle,
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: snackBarColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.all(10),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          ),
-        );
-      }
-      // Navigate to the home screen
+      // Define the style for the message text
+      TextStyle messageTextStyle = GoogleFonts.roboto(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      );
+
+      // Navigate to the home screen or stay based on the response
       if (response == "Login successful") {
-        Future.delayed(const Duration(seconds: 1), () {
-          // Navigate to the LoginScreen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
-          );
-        });
+        // Handle response with a styled Get.snackbar
+        Get.snackbar(
+          "",
+          "",
+          titleText: const Text(
+            "Success",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          messageText: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(snackBarIcon, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  response,
+                  textAlign: TextAlign.start,
+                  style: messageTextStyle,
+                ),
+              ),
+            ],
+          ),
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: snackBarColor,
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+          borderRadius: 10,
+          duration: const Duration(seconds: 3),
+          snackStyle: SnackStyle.FLOATING,
+          isDismissible: true,
+          forwardAnimationCurve: Curves.easeOutBack,
+          reverseAnimationCurve: Curves.easeInBack,
+          boxShadows: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 2,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        );
+        Get.to(() => const MapScreen());
+      } else {
+        // Handle response with a styled Get.snackbar
+        Get.snackbar(
+          "",
+          "",
+          titleText: const Text(
+            "Try Again!",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          messageText: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(snackBarIcon, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  response,
+                  textAlign: TextAlign.start,
+                  style: messageTextStyle,
+                ),
+              ),
+            ],
+          ),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: snackBarColor,
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+          borderRadius: 10,
+          duration: const Duration(seconds: 3),
+          snackStyle: SnackStyle.FLOATING,
+          isDismissible: true,
+          forwardAnimationCurve: Curves.easeOutBack,
+          reverseAnimationCurve: Curves.easeInBack,
+          boxShadows: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 2,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        );
       }
     }
   }
