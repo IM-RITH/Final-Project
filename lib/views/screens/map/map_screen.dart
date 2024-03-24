@@ -111,7 +111,18 @@ class _MapScreenState extends State<MapScreen> {
                     "Shop Now",
                     style: shopText,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    // Show a loading dialog
+                    Get.dialog(
+                      const Center(
+                          child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )),
+                      barrierDismissible: false,
+                    );
+                    await Future.delayed(const Duration(seconds: 2));
+
+                    Get.back();
                     Get.offAll(const MainScreen());
                   },
                   style: ElevatedButton.styleFrom(
