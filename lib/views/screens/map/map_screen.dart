@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easyshop/views/screens/HomeScreen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -109,7 +110,9 @@ class _MapScreenState extends State<MapScreen> {
                     "Shop Now",
                     style: shopText,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.offAll(const HomePage());
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
