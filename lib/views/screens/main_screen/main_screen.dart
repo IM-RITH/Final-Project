@@ -1,9 +1,4 @@
-import "package:easyshop/views/screens/HomeScreen/home_screen.dart";
-import "package:easyshop/views/screens/bookmark/bookmark_screen.dart";
-import "package:easyshop/views/screens/cart/cart_screen.dart";
-import "package:easyshop/views/screens/profile/profile_screen.dart";
-import "package:flutter/material.dart";
-import "package:curved_navigation_bar/curved_navigation_bar.dart";
+import 'package:easyshop/views/screens/main_screen/utils/utils.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -29,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: _pages[_selectIndex],
       bottomNavigationBar: CurvedNavigationBar(
-        height: 70.0,
+        height: 60.0,
         buttonBackgroundColor: const Color(0xFF8A9418),
         backgroundColor: Colors.transparent,
         color: const Color(0xFF0C2D57),

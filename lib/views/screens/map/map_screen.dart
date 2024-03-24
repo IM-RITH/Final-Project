@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:easyshop/views/screens/main%20screen/main_screen.dart';
+import 'package:easyshop/views/screens/main_screen/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -77,6 +77,7 @@ class _MapScreenState extends State<MapScreen> {
       body: Stack(
         children: [
           GoogleMap(
+            padding: const EdgeInsets.only(bottom: 50),
             myLocationButtonEnabled: true,
             myLocationEnabled: true,
             mapType: MapType.normal,
