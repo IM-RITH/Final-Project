@@ -14,6 +14,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late var screenWidth;
+  late var screenHeight;
   bool _passwordVisible = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailContoller = TextEditingController();
@@ -170,6 +172,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
     // Styles for text
     TextStyle welcomeTextStyle = GoogleFonts.roboto(
       fontSize: 28,

@@ -166,7 +166,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                                 const CircularProgressIndicator(),
                                 const SizedBox(width: 20),
                                 Text(
-                                  'Processing Data',
+                                  'Sending email...',
                                   style: submitTextStyle.copyWith(
                                       color: Colors.blueGrey),
                                 ),

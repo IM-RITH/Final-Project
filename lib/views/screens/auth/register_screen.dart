@@ -72,7 +72,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   // signup function
-  // signup function
   void _signUpUser() async {
     if (_formKey.currentState!.validate()) {
       // Show loading dialog or indicator before the request
