@@ -14,8 +14,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late var screenWidth;
-  late var screenHeight;
   bool _passwordVisible = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailContoller = TextEditingController();
@@ -172,8 +170,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
     // Styles for text
     TextStyle welcomeTextStyle = GoogleFonts.roboto(
       fontSize: 28,
@@ -267,6 +263,86 @@ class _LoginScreenState extends State<LoginScreen> {
       return null;
     }
 
+    Padding buildGoogleSignInButton() {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.g_translate, color: Colors.white),
+          label: Text(
+            'Sign in with Google',
+            style: GoogleFonts.roboto(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.redAccent,
+            minimumSize: const Size(double.infinity, 60),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          onPressed: () async {
+            // Use async here to await the Google sign-in result
+            // Show loading indicator
+            Get.dialog(
+              const Center(child: CircularProgressIndicator()),
+              barrierDismissible: false,
+            );
+
+            String result = await _authController
+                .signInWithGoogle(); // Await the result of the sign-in
+            // Dismiss the loading indicator
+            if (Get.isDialogOpen ?? false) Get.back();
+
+            if (result == "Sign in successful") {
+              // If sign-in is successful, navigate to the MapScreen
+              Get.offAll(() => const MapScreen());
+            } else {
+              // If there is an error or sign-in is cancelled, show a Snackbar with the error message
+              Get.snackbar(
+                "Sign In Error",
+                result,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.redAccent,
+                colorText: Colors.white,
+              );
+            }
+          },
+        ),
+      );
+    }
+
+    Widget buildOrDivider() {
+      return Row(
+        children: <Widget>[
+          const Expanded(
+            child: Divider(
+              color: Colors.white,
+              height: 20,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              'OR',
+              style: GoogleFonts.roboto(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const Expanded(
+            child: Divider(
+              color: Colors.white,
+              height: 20,
+            ),
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       backgroundColor: backgroundColor,
       body: SafeArea(
@@ -278,10 +354,10 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   Image.asset(
                     'assets/images/loginlogo1.png',
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.35,
                     height: MediaQuery.of(context).size.height * 0.2,
                   ),
                   const SizedBox(height: 10),
@@ -413,8 +489,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF8A9418),
-                      minimumSize:
-                          const Size(double.infinity, 60), // button height
+                      minimumSize: const Size(double.infinity, 60),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -424,6 +499,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: createAccTextStyle,
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  buildOrDivider(),
+                  const SizedBox(height: 5),
+                  buildGoogleSignInButton()
                 ],
               ),
             ),

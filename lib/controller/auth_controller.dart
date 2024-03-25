@@ -1,14 +1,15 @@
 import "dart:typed_data";
-
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:image_picker/image_picker.dart";
 import "package:firebase_storage/firebase_storage.dart";
+import "package:google_sign_in/google_sign_in.dart";
 
 class AuthController {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // select or pick an image
 
@@ -127,7 +128,7 @@ class AuthController {
   }
 
   // reset password function
-   Future<String> sendPasswordResetEmail(String email) async {
+  Future<String> sendPasswordResetEmail(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
       return "Password reset email sent. Please check your inbox.";
@@ -138,4 +139,55 @@ class AuthController {
     }
   }
 
+  // sign in with google and update firestore
+  Future<String> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        print('Google sign-in was cancelled by the user.');
+        return "User cancelled the sign in";
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential authResult =
+          await _auth.signInWithCredential(credential);
+      final User? user = authResult.user;
+
+      if (user == null) {
+        print('Firebase user object was null after Google sign-in.');
+        return "Firebase User object was null";
+      }
+
+      // Checking if user data exists in Firestore
+      final DocumentSnapshot userDoc =
+          await _firestore.collection("buyers").doc(user.uid).get();
+      if (!userDoc.exists) {
+        await _firestore.collection("buyers").doc(user.uid).set({
+          'username': user.displayName ?? user.email?.split('@')[0],
+          'profileImage': user.photoURL ?? '',
+          'email': user.email,
+          'buyerId': user.uid,
+        });
+        print('New user data added to Firestore.');
+      } else {
+        print('User already exists in Firestore.');
+      }
+
+      print(
+          'Google sign-in successful, user data checked/updated in Firestore.');
+      return "Sign in successful";
+    } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException during Google sign-in: ${e.message}');
+      return e.message ?? "An error occurred during Google sign in.";
+    } catch (e) {
+      print('Exception during Google sign-in: $e');
+      return "An unexpected error occurred.";
+    }
+  }
 }

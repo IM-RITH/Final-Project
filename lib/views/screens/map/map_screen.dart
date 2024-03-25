@@ -123,7 +123,9 @@ class _MapScreenState extends State<MapScreen> {
                     await Future.delayed(const Duration(seconds: 2));
 
                     Get.back();
-                    Get.offAll(const MainScreen());
+                    Get.offAll(
+                      () => const MainScreen(),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
