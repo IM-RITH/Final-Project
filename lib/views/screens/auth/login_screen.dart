@@ -264,16 +264,27 @@ class _LoginScreenState extends State<LoginScreen> {
       return null;
     }
 
-    Widget buildSocialMediaSignInButton(IconData iconData, Color bgColor,
-        Color iconColor, VoidCallback onPressed) {
-      return ElevatedButton(
+    Widget buildSocialMediaSignInButton({
+      required String label,
+      required IconData iconData,
+      required Color bgColor,
+      required Color textColor,
+      required VoidCallback onPressed,
+    }) {
+      return ElevatedButton.icon(
+        icon: Icon(iconData, size: 24, color: textColor),
+        label: Text(label,
+            style: GoogleFonts.roboto(
+                color: textColor, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
-          shape: const CircleBorder(),
-          padding: const EdgeInsets.all(14),
+          minimumSize: const Size(150, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          elevation: 5,
         ),
         onPressed: onPressed,
-        child: Icon(iconData, size: 30, color: iconColor),
       );
     }
 
@@ -285,12 +296,12 @@ class _LoginScreenState extends State<LoginScreen> {
           children: <Widget>[
             // Google Sign-In Button
             buildSocialMediaSignInButton(
-              FontAwesomeIcons.google,
-              Colors.white,
-              const Color.fromARGB(255, 220, 78, 46),
-              () async {
+              label: 'Google',
+              iconData: FontAwesomeIcons.google,
+              bgColor: Colors.white,
+              textColor: Colors.black,
+              onPressed: () async {
                 // Google Sign-In
-                // Show loading indicator
                 Get.dialog(
                   const Center(child: CircularProgressIndicator()),
                   barrierDismissible: false,
@@ -300,6 +311,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (Get.isDialogOpen ?? false) Get.back();
                 if (result == "Sign in successful") {
                   Get.offAll(() => const MapScreen());
+                  Get.snackbar(
+                    "Login Success",
+                    "You have successfully signed in with Google.",
+                    snackPosition: SnackPosition.TOP,
+                    backgroundColor: Colors.green,
+                    colorText: Colors.white,
+                  );
                 } else {
                   Get.snackbar(
                     "Sign In Error",
@@ -313,10 +331,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             // Facebook Sign-In Button
             buildSocialMediaSignInButton(
-              FontAwesomeIcons.facebookF,
-              Colors.white,
-              Colors.blue[800]!,
-              () async {
+              label: 'Facebook',
+              iconData: FontAwesomeIcons.facebookF,
+              bgColor: const Color(0xFF3b5998),
+              textColor: Colors.white,
+              onPressed: () async {
                 Get.dialog(
                   const Center(child: CircularProgressIndicator()),
                   barrierDismissible: false,
@@ -325,6 +344,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (Get.isDialogOpen ?? false) Get.back();
                 if (result == "Sign in successful") {
                   Get.offAll(() => const MapScreen());
+                  Get.snackbar(
+                    "Login Success",
+                    "You have successfully signed in with Facebook.",
+                    snackPosition: SnackPosition.TOP,
+                    backgroundColor: Colors.green,
+                    colorText: Colors.white,
+                  );
                 } else {
                   Get.snackbar(
                     "Sign In Error",
@@ -334,15 +360,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     colorText: Colors.white,
                   );
                 }
-              },
-            ),
-            // Apple Sign-In Button
-            buildSocialMediaSignInButton(
-              FontAwesomeIcons.apple,
-              Colors.white,
-              Colors.black,
-              () {
-                // Apple Sign-In logic
               },
             ),
           ],
