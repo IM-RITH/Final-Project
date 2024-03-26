@@ -284,7 +284,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           onPressed: () async {
-            // Use async here to await the Google sign-in result
             // Show loading indicator
             Get.dialog(
               const Center(child: CircularProgressIndicator()),
@@ -297,10 +296,9 @@ class _LoginScreenState extends State<LoginScreen> {
             if (Get.isDialogOpen ?? false) Get.back();
 
             if (result == "Sign in successful") {
-              // If sign-in is successful, navigate to the MapScreen
               Get.offAll(() => const MapScreen());
             } else {
-              // If there is an error or sign-in is cancelled, show a Snackbar with the error message
+             
               Get.snackbar(
                 "Sign In Error",
                 result,
