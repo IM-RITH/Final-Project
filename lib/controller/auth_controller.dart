@@ -4,6 +4,7 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:image_picker/image_picker.dart";
 import "package:firebase_storage/firebase_storage.dart";
 import "package:google_sign_in/google_sign_in.dart";
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthController {
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -144,7 +145,6 @@ class AuthController {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        print('Google sign-in was cancelled by the user.');
         return "User cancelled the sign in";
       }
 
@@ -178,7 +178,6 @@ class AuthController {
       } else {
         print('User already exists in Firestore.');
       }
-
       print(
           'Google sign-in successful, user data checked/updated in Firestore.');
       return "Sign in successful";
@@ -188,6 +187,48 @@ class AuthController {
     } catch (e) {
       print('Exception during Google sign-in: $e');
       return "An unexpected error occurred.";
+    }
+  }
+
+  // sign in with facebook
+  Future<String> signInWithFacebook() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      if (result.status == LoginStatus.success) {
+        // Create a credential from the access token
+        final OAuthCredential facebookAuthCredential =
+            FacebookAuthProvider.credential(result.accessToken!.token);
+
+        // Once signed in, return the UserCredential
+        final UserCredential userCredential =
+            await _auth.signInWithCredential(facebookAuthCredential);
+        final User? user = userCredential.user;
+
+        //check and update Firestore just like you do in the Google Sign-in method.
+        if (user != null) {
+          final userData = await FacebookAuth.instance.getUserData();
+          final profileImageUrl = userData['picture']['data']['url'];
+          final email = userData['email'];
+          final username = userData['name'];
+
+          await _firestore.collection("buyers").doc(user.uid).set({
+            'username': username,
+            'profileImage': profileImageUrl,
+            'email': email,
+            'buyerId': user.uid,
+          }, SetOptions(merge: true));
+
+          return "Sign in successful";
+        } else {
+          return "User not found";
+        }
+      } else {
+        return "Facebook sign-in failed: ${result.status}";
+      }
+    } catch (e) {
+      print(e);
+      return "An error occurred during Facebook sign in.";
     }
   }
 }

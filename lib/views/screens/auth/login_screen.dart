@@ -5,6 +5,7 @@ import 'package:easyshop/views/screens/map/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -263,51 +264,88 @@ class _LoginScreenState extends State<LoginScreen> {
       return null;
     }
 
-    Padding buildGoogleSignInButton() {
+    Widget buildSocialMediaSignInButton(IconData iconData, Color bgColor,
+        Color iconColor, VoidCallback onPressed) {
+      return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: bgColor,
+          shape: const CircleBorder(),
+          padding: const EdgeInsets.all(14),
+        ),
+        onPressed: onPressed,
+        child: Icon(iconData, size: 30, color: iconColor),
+      );
+    }
+
+    Widget buildSocialMediaSignInRow() {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: ElevatedButton.icon(
-          icon: const Icon(Icons.g_translate, color: Colors.white),
-          label: Text(
-            'Sign in with Google',
-            style: GoogleFonts.roboto(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+        padding: const EdgeInsets.only(top: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            // Google Sign-In Button
+            buildSocialMediaSignInButton(
+              FontAwesomeIcons.google,
+              Colors.white,
+              const Color.fromARGB(255, 220, 78, 46),
+              () async {
+                // Google Sign-In
+                // Show loading indicator
+                Get.dialog(
+                  const Center(child: CircularProgressIndicator()),
+                  barrierDismissible: false,
+                );
+                String result = await _authController.signInWithGoogle();
+                // Dismiss the loading indicator
+                if (Get.isDialogOpen ?? false) Get.back();
+                if (result == "Sign in successful") {
+                  Get.offAll(() => const MapScreen());
+                } else {
+                  Get.snackbar(
+                    "Sign In Error",
+                    result,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.redAccent,
+                    colorText: Colors.white,
+                  );
+                }
+              },
             ),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.redAccent,
-            minimumSize: const Size(double.infinity, 60),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+            // Facebook Sign-In Button
+            buildSocialMediaSignInButton(
+              FontAwesomeIcons.facebookF,
+              Colors.white,
+              Colors.blue[800]!,
+              () async {
+                Get.dialog(
+                  const Center(child: CircularProgressIndicator()),
+                  barrierDismissible: false,
+                );
+                String result = await _authController.signInWithFacebook();
+                if (Get.isDialogOpen ?? false) Get.back();
+                if (result == "Sign in successful") {
+                  Get.offAll(() => const MapScreen());
+                } else {
+                  Get.snackbar(
+                    "Sign In Error",
+                    result,
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.redAccent,
+                    colorText: Colors.white,
+                  );
+                }
+              },
             ),
-          ),
-          onPressed: () async {
-            // Show loading indicator
-            Get.dialog(
-              const Center(child: CircularProgressIndicator()),
-              barrierDismissible: false,
-            );
-
-            String result = await _authController
-                .signInWithGoogle(); // Await the result of the sign-in
-            // Dismiss the loading indicator
-            if (Get.isDialogOpen ?? false) Get.back();
-
-            if (result == "Sign in successful") {
-              Get.offAll(() => const MapScreen());
-            } else {
-             
-              Get.snackbar(
-                "Sign In Error",
-                result,
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: Colors.redAccent,
-                colorText: Colors.white,
-              );
-            }
-          },
+            // Apple Sign-In Button
+            buildSocialMediaSignInButton(
+              FontAwesomeIcons.apple,
+              Colors.white,
+              Colors.black,
+              () {
+                // Apple Sign-In logic
+              },
+            ),
+          ],
         ),
       );
     }
@@ -499,8 +537,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
                   buildOrDivider(),
-                  const SizedBox(height: 5),
-                  buildGoogleSignInButton()
+                  const SizedBox(height: 2),
+                  buildSocialMediaSignInRow()
                 ],
               ),
             ),

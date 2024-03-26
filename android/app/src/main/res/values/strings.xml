@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="facebook_app_id">754716543524646</string>
+    <string name="fb_login_protocol_scheme">fb754716543524646</string>
+    <string name="facebook_client_token">3b753bf9fa39597d8b59c99c1d4cb235</string>
+    <string name="app_name">Easy Shop</string>
+
+</resources>
