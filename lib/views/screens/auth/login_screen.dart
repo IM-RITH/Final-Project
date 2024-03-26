@@ -278,7 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: textColor, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
-          minimumSize: const Size(150, 50),
+          minimumSize: const Size(180, 50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -295,39 +295,42 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             // Google Sign-In Button
-            buildSocialMediaSignInButton(
-              label: 'Google',
-              iconData: FontAwesomeIcons.google,
-              bgColor: Colors.white,
-              textColor: Colors.black,
-              onPressed: () async {
-                // Google Sign-In
-                Get.dialog(
-                  const Center(child: CircularProgressIndicator()),
-                  barrierDismissible: false,
-                );
-                String result = await _authController.signInWithGoogle();
-                // Dismiss the loading indicator
-                if (Get.isDialogOpen ?? false) Get.back();
-                if (result == "Sign in successful") {
-                  Get.offAll(() => const MapScreen());
-                  Get.snackbar(
-                    "Login Success",
-                    "You have successfully signed in with Google.",
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: Colors.green,
-                    colorText: Colors.white,
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: buildSocialMediaSignInButton(
+                label: 'Google',
+                iconData: FontAwesomeIcons.google,
+                bgColor: Colors.white,
+                textColor: Colors.black,
+                onPressed: () async {
+                  // Google Sign-In
+                  Get.dialog(
+                    const Center(child: CircularProgressIndicator()),
+                    barrierDismissible: false,
                   );
-                } else {
-                  Get.snackbar(
-                    "Sign In Error",
-                    result,
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.redAccent,
-                    colorText: Colors.white,
-                  );
-                }
-              },
+                  String result = await _authController.signInWithGoogle();
+                  // Dismiss the loading indicator
+                  if (Get.isDialogOpen ?? false) Get.back();
+                  if (result == "Sign in successful") {
+                    Get.offAll(() => const MapScreen());
+                    Get.snackbar(
+                      "Login Success",
+                      "You have successfully signed in with Google.",
+                      snackPosition: SnackPosition.TOP,
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
+                  } else {
+                    Get.snackbar(
+                      "Sign In Error",
+                      result,
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.redAccent,
+                      colorText: Colors.white,
+                    );
+                  }
+                },
+              ),
             ),
             // Facebook Sign-In Button
             buildSocialMediaSignInButton(
