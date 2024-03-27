@@ -205,7 +205,7 @@ class AuthController {
             await _auth.signInWithCredential(facebookAuthCredential);
         final User? user = userCredential.user;
 
-        //check and update Firestore just like you do in the Google Sign-in method.
+        //check and update Firestore.
         if (user != null) {
           final userData = await FacebookAuth.instance.getUserData();
           final profileImageUrl = userData['picture']['data']['url'];
@@ -227,7 +227,7 @@ class AuthController {
         return "Facebook sign-in failed: ${result.status}";
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return "An error occurred during Facebook sign in.";
     }
   }
