@@ -38,7 +38,7 @@ class _BannerWidgetState extends State<BannerWidget> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    double bannerHeight = screenHeight * 0.16;
+    double bannerHeight = screenHeight * 0.15;
     return _bannerImages.isNotEmpty
         ? Column(
             children: [
@@ -80,8 +80,8 @@ class _BannerWidgetState extends State<BannerWidget> {
                   return GestureDetector(
                     onTap: () => _carouselController.animateToPage(entry.key),
                     child: Container(
-                      width: 12.0,
-                      height: 12.0,
+                      width: 5.0,
+                      height: 5.0,
                       margin: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 4.0),
                       decoration: BoxDecoration(
