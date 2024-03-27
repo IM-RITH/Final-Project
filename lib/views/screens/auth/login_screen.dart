@@ -301,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 label: 'Google',
                 iconData: FontAwesomeIcons.google,
                 bgColor: Colors.white,
-                textColor: Colors.black,
+                textColor: const Color.fromARGB(255, 196, 48, 48),
                 onPressed: () async {
                   // Google Sign-In
                   Get.dialog(
@@ -382,7 +382,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
-              'OR',
+              'Or Sign In With',
               style: GoogleFonts.roboto(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
