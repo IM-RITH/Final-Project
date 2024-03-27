@@ -412,11 +412,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   Image.asset(
-                    'assets/images/loginlogo1.png',
-                    width: MediaQuery.of(context).size.width * 0.35,
+                    'assets/images/LoginIcon.png',
+                    width: MediaQuery.of(context).size.width * 0.45,
                     height: MediaQuery.of(context).size.height * 0.2,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   Text('Welcome back!', style: welcomeTextStyle),
                   const SizedBox(height: 8),
                   Text(

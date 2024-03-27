@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
           LogoWidget(),
           SizedBox(height: 10.0),
           SearchWidget(),
-          SizedBox(height: 10.0),
+          SizedBox(height: 12.0),
           BannerWidget(),
         ],
       ),
