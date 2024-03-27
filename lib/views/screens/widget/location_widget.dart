@@ -6,7 +6,7 @@ class LocationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 30.0),
+      padding: const EdgeInsets.only(top: 40.0, left: 6),
       child: Row(
         children: [
           Image.asset(
