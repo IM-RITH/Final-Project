@@ -479,8 +479,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: !_passwordVisible,
                       decoration: InputDecoration(
                           prefixIcon: const Icon(
-                            Icons.password_sharp,
+                            FontAwesomeIcons.lock,
                             color: Colors.white,
+                            size: 20,
                           ),
                           labelText: 'Password',
                           labelStyle: labelStyle,

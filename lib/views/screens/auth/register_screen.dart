@@ -1,5 +1,4 @@
 import "dart:typed_data";
-
 import "package:easyshop/controller/auth_controller.dart";
 import "package:easyshop/views/screens/auth/login_screen.dart";
 import "package:easyshop/views/screens/privacy/privacy_policy.dart";
