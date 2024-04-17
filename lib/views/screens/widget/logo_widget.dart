@@ -60,7 +60,7 @@ class ChatBubbleIcon extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(Icons.chat, color: Colors.white),
+        child: const Icon(Icons.notifications, color: Colors.white),
       ),
     );
   }

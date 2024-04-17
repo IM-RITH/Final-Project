@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class BannerWidget extends StatefulWidget {
   const BannerWidget({Key? key}) : super(key: key);
@@ -53,9 +54,17 @@ class _BannerWidgetState extends State<BannerWidget> {
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10.0),
-                      image: DecorationImage(
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
                         fit: BoxFit.cover,
-                        image: NetworkImage(imageUrl),
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
                     ),
                   );
