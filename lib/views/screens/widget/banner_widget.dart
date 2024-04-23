@@ -12,7 +12,7 @@ class BannerWidget extends StatefulWidget {
 
 class _BannerWidgetState extends State<BannerWidget> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final List<String> _bannerImages = [];
+  List<String> _bannerImages = [];
   int _current = 0;
   final CarouselController _carouselController = CarouselController();
 
@@ -23,16 +23,29 @@ class _BannerWidgetState extends State<BannerWidget> {
   }
 
   Future<void> _fetchBanners() async {
-    QuerySnapshot querySnapshot = await _firestore.collection('banners').get();
-    final List<String> imageUrls = querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .map((data) => data['image'] as String)
-        .toList();
+    try {
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('banners').get();
+      final List<String> imageUrls = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .map((data) => data['image'] as String)
+          .toList();
 
-    if (imageUrls.isNotEmpty) {
-      setState(() {
-        _bannerImages.addAll(imageUrls);
-      });
+      if (imageUrls.isNotEmpty) {
+        if (mounted) {
+          setState(() {
+            _bannerImages =
+                imageUrls; // Refresh the list instead of adding to it
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _bannerImages = []; // Clear the list on error
+        });
+      }
+      print("Failed to fetch banners: ${e.toString()}");
     }
   }
 
@@ -106,9 +119,8 @@ class _BannerWidgetState extends State<BannerWidget> {
             ],
           )
         : const SizedBox(
-            // Placeholder widget
             child: Center(
-              child: CircularProgressIndicator(),
+              child: Text('No banners available'),
             ),
           );
   }
