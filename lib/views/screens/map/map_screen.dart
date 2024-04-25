@@ -24,14 +24,20 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _determinePosition().then((position) {
-      setState(() {
-        _initialCameraPosition = CameraPosition(
-          target: LatLng(position.latitude, position.longitude),
-          zoom: 14.4746,
-        );
-      });
+      if (mounted) {
+        // Check if the widget is still in the tree
+        setState(() {
+          _initialCameraPosition = CameraPosition(
+            target: LatLng(position.latitude, position.longitude),
+            zoom: 14.4746,
+          );
+        });
+      }
     }).catchError((e) {
-      Get.snackbar("Location Error", "Failed to get current location: $e");
+      if (mounted) {
+        // Check if the widget is still in the tree
+        Get.snackbar("Location Error", "Failed to get current location: $e");
+      }
     });
   }
 

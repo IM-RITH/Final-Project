@@ -52,6 +52,13 @@ dependencies:
   flutter_facebook_auth: ^6.1.1
   carousel_slider: ^4.2.1
   cached_network_image: ^3.3.1
+  persistent_bottom_nav_bar: ^5.0.2
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/loginLogo.png"
 
 dev_dependencies:
   flutter_test:

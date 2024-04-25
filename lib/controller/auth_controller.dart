@@ -231,4 +231,15 @@ class AuthController {
       return "An error occurred during Facebook sign in.";
     }
   }
+
+  // logout function
+  Future<void> signOut() async {
+    await _auth.signOut();
+    // Optionally sign out from Google as well
+    if (await _googleSignIn.isSignedIn()) {
+      await _googleSignIn.signOut();
+    }
+    // Optionally sign out from Facebook
+    await FacebookAuth.instance.logOut();
+  }
 }
