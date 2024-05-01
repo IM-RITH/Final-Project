@@ -62,7 +62,6 @@ class _CategoryWidgetState extends State<CategoryWidget> {
               itemCount: _categoryController.categories.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
-                
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(context,
