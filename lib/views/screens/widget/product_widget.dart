@@ -26,17 +26,26 @@ class _ProductWidgetState extends State<ProductWidget> {
     return Container(
       width: 150,
       height: 150,
-      margin: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(5.0),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: const Color(0xFF343450),
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
+        borderRadius: BorderRadius.circular(10),
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          stops: const [0.1, 0.9],
+          colors: [
+            const Color(0xFF0C2D57).withOpacity(0.9),
+            const Color(0xFF0C2D57).withOpacity(0.8),
+          ],
+        ),
+        boxShadow: [
           BoxShadow(
-            blurRadius: 6,
-            spreadRadius: 3,
-            offset: Offset(0, 4),
-          )
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Stack(

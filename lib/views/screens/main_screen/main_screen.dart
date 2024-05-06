@@ -16,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomePage(),
     const BookMarkScreen(),
     const CartScreen(),
-    const ChatScreen(),
+    // const ChatScreen(),
     const ProfileScreen(),
   ];
 
@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
             Icon(Icons.home, size: iconSize, color: iconColor),
             Icon(Icons.bookmark, size: iconSize, color: iconColor),
             Icon(Icons.shopping_cart, size: iconSize, color: iconColor),
-            Icon(Icons.chat, size: iconSize, color: iconColor),
+            // Icon(Icons.chat, size: iconSize, color: iconColor),
             Icon(Icons.person, size: iconSize, color: iconColor),
           ],
           onTap: (index) {

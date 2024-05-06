@@ -1,4 +1,6 @@
+import 'package:easyshop/views/screens/chat/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import "package:google_fonts/google_fonts.dart";
 
 class SearchWidget extends StatelessWidget {
@@ -63,7 +65,11 @@ class SearchWidget extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           GestureDetector(
-            // onTap: () => _navigateToStoreScreen(context),
+            onTap: () {
+              Get.to(
+                () => const ChatScreen(),
+              );
+            },
             child: Container(
               height: 45,
               width: 45,
@@ -79,7 +85,7 @@ class SearchWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.store, color: Colors.white),
+              child: const Icon(Icons.chat, color: Colors.white),
             ),
           ),
         ],

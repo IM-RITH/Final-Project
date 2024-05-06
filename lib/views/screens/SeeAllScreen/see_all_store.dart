@@ -1,31 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easyshop/views/screens/innerscreen/category_product.dart';
+import 'package:easyshop/views/screens/innerscreen/store_product.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class SeeAllCategoryScreen extends StatefulWidget {
-  const SeeAllCategoryScreen({super.key});
+class SeeAllStoreScreen extends StatefulWidget {
+  const SeeAllStoreScreen({super.key});
 
   @override
-  State<SeeAllCategoryScreen> createState() => _SeeAllCategoryScreenState();
+  State<SeeAllStoreScreen> createState() => _SeeAllStoreScreenState();
 }
 
-class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
-  final Stream<QuerySnapshot> _categoryStream =
-      FirebaseFirestore.instance.collection('categories').snapshots();
+class _SeeAllStoreScreenState extends State<SeeAllStoreScreen> {
+  final Stream<QuerySnapshot> _storeStream =
+      FirebaseFirestore.instance.collection('vendors').snapshots();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Categories',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          'Stores',
+          style: GoogleFonts.poppins(
+            textStyle: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+          ),
         ),
         backgroundColor: const Color(0xFF153167),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _categoryStream,
+        stream: _storeStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return const Center(child: Text('Something went wrong'));
@@ -36,7 +40,7 @@ class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
           }
 
           if (snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No categories found'));
+            return const Center(child: Text('No Store Found'));
           }
 
           return ListView.builder(
@@ -52,36 +56,46 @@ class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  tileColor: Colors.grey[200],
+                  tileColor: Colors.deepPurple[50],
                   leading: Container(
                     width: 60,
                     height: 50,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage(data['image']),
+                        image: NetworkImage(data['storeImage']),
                         fit: BoxFit.contain,
                       ),
                       borderRadius: const BorderRadius.all(
-                        Radius.circular(8),
+                        Radius.circular(12),
                       ),
                     ),
                   ),
                   title: Text(
-                    data['categoryName'],
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                    data['storeName'],
+                    style: GoogleFonts.roboto(
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                  subtitle: const Text(
-                    'Explore Now',
-                    style: TextStyle(color: Colors.black45),
+                  subtitle: Row(
+                    children: [
+                      Icon(Icons.arrow_forward,
+                          color: Colors.deepPurple, size: 20),
+                      SizedBox(width: 4),
+                      Text(
+                        'Shop Now!',
+                        style: TextStyle(color: Colors.deepPurple),
+                      ),
+                    ],
                   ),
                   onTap: () {
+                    // use store product (inner screen file)
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return CategoryProductScreen(
-                        categoryData: data,
+                      return StoreProductScreen(
+                        storeData: data,
                       );
                     }));
                   },

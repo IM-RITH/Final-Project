@@ -1,25 +1,25 @@
-import 'package:easyshop/controller/category_controller.dart';
-import 'package:easyshop/views/screens/SeeAllScreen/see_all_category.dart';
-import 'package:easyshop/views/screens/innerscreen/category_product.dart';
+import 'package:easyshop/controller/store_controller.dart';
+import 'package:easyshop/views/screens/SeeAllScreen/see_all_store.dart';
+import 'package:easyshop/views/screens/innerscreen/store_product.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CategoryWidget extends StatefulWidget {
-  const CategoryWidget({super.key});
+class StoreWidget extends StatefulWidget {
+  const StoreWidget({super.key});
 
   @override
-  State<CategoryWidget> createState() => _CategoryWidgetState();
+  State<StoreWidget> createState() => _StoreWidgetState();
 }
 
-class _CategoryWidgetState extends State<CategoryWidget> {
-  final CategoryController _categoryController = Get.find<CategoryController>();
+class _StoreWidgetState extends State<StoreWidget> {
+  final StoreController _storeController = Get.find<StoreController>();
 
   @override
   Widget build(BuildContext context) {
     TextStyle cateName = GoogleFonts.roboto(
       fontSize: 14,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
       color: Colors.black87,
     );
     TextStyle headerStyle =
@@ -39,11 +39,11 @@ class _CategoryWidgetState extends State<CategoryWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Category', style: headerStyle),
+                Text('Latest Store', style: headerStyle),
                 GestureDetector(
                   onTap: () {
                     Get.to(
-                      () => const SeeAllCategoryScreen(),
+                      () => const SeeAllStoreScreen(),
                     );
                   },
                   child: Text('See all', style: seeAllStyle),
@@ -54,18 +54,25 @@ class _CategoryWidgetState extends State<CategoryWidget> {
           SizedBox(
             height: 90,
             child: ListView.builder(
-              itemCount: _categoryController.categories.length,
+              itemCount: _storeController.stores.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      var category = _categoryController.categories[index];
-                      return CategoryProductScreen(
-                        categoryData: {'categoryName': category.categoryName},
-                      );
-                    }));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          var store = _storeController.stores[index];
+                          return StoreProductScreen(
+                            storeData: {
+                              'storeName': store.storeName,
+                              'storeImage': store.storeImage
+                            },
+                          );
+                        },
+                      ),
+                    );
                   },
                   child: Padding(
                     padding:
@@ -89,8 +96,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                               child: Align(
                                 alignment: Alignment.center,
                                 child: Image.network(
-                                  _categoryController
-                                      .categories[index].categoryImage,
+                                  _storeController.stores[index].storeImage,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -99,7 +105,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          _categoryController.categories[index].categoryName,
+                          _storeController.stores[index].storeName,
                           style: cateName,
                         ),
                       ],

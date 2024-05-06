@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:easyshop/controller/category_controller.dart';
+import 'package:easyshop/controller/store_controller.dart';
 import 'package:easyshop/views/onboardingscreen.dart';
 import 'package:easyshop/views/screens/map/map_screen.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,9 @@ class _MyAppState extends State<MyApp> {
         () {
           Get.put<CategoryController>(
             CategoryController(),
+          );
+          Get.put<StoreController>(
+            StoreController(),
           );
         },
       ),

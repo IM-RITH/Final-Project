@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easyshop/views/screens/SeeAllScreen/product_detail.dart';
 import 'package:easyshop/views/screens/widget/product_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class RecommendProduct extends StatefulWidget {
   const RecommendProduct({super.key});
@@ -11,8 +11,10 @@ class RecommendProduct extends StatefulWidget {
 }
 
 class _RecommendProductState extends State<RecommendProduct> {
-  final Stream<QuerySnapshot> _productStream =
-      FirebaseFirestore.instance.collection('products').snapshots();
+  final Stream<QuerySnapshot> _productStream = FirebaseFirestore.instance
+      .collection('products')
+      .orderBy('createdAt', descending: true)
+      .snapshots();
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -37,14 +39,26 @@ class _RecommendProductState extends State<RecommendProduct> {
         return SizedBox(
           height: 200,
           child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) {
-                final productData = snapshot.data!.docs[index];
-                return ProductWidget(
+            scrollDirection: Axis.horizontal,
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              final productData = snapshot.data!.docs[index];
+              return InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ProductDetailScreen(
+                      productDetail: productData,
+                    );
+                  }));
+                },
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                child: ProductWidget(
                   productData: productData,
-                );
-              }),
+                ),
+              );
+            },
+          ),
         );
       },
     );

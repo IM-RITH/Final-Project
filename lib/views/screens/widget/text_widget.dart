@@ -26,7 +26,7 @@ class _ProductWidgetState extends State<TextWidget> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Recommend', style: headerStyle),
+              Text('Latest Product', style: headerStyle),
               GestureDetector(
                 onTap: () {},
                 child: Text('See all', style: seeAllStyle),
