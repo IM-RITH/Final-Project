@@ -15,6 +15,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool isBookmarked = false;
   int selectedImageIndex = 0;
   int? selectedSizeIndex;
+  int? selectedColorIndex;
+  double averageRating = 4.5;
+  int totalReviews = 200;
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +30,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         widget.productDetail != null && widget.productDetail['sizeList'] is List
             ? List<String>.from(widget.productDetail['sizeList'])
             : ['S', 'M', 'L', 'XL'];
+    List<String> colors = widget.productDetail != null &&
+            widget.productDetail['colorList'] is List
+        ? List<String>.from(widget.productDetail['colorList'])
+        : ['Black', 'Green', 'White'];
+    String description = widget.productDetail['productDescription'] ??
+        "No description available";
+    String storeName = widget.productDetail['storeName'] ?? 'No Name Store';
+    String storeImage =
+        widget.productDetail['storeImage'] ?? 'https://via.placeholder.com/150';
 
     TextStyle productNameStyle = GoogleFonts.roboto(
-      fontSize: 18,
+      fontSize: 20,
       color: Colors.black87,
       fontWeight: FontWeight.w700,
     );
@@ -40,12 +52,37 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
     TextStyle sizeTextStyle = GoogleFonts.roboto(
       fontSize: 18,
-      color: Colors.black,
+      color: Colors.black87,
       fontWeight: FontWeight.w700,
     );
     TextStyle sizeGuideTextStyle = GoogleFonts.roboto(
       fontSize: 18,
-      color: const Color(0xFF012E87),
+      fontWeight: FontWeight.w700,
+      color: Colors.black54,
+    );
+    TextStyle descriptionSubTextStyle = GoogleFonts.roboto(
+      fontSize: 18,
+      color: Colors.black87,
+      fontWeight: FontWeight.w700,
+    );
+    TextStyle descriptionTextStyle = GoogleFonts.roboto(
+      fontSize: 16,
+      color: Colors.black54,
+      fontWeight: FontWeight.w600,
+    );
+    TextStyle reviewSubTextStyle = GoogleFonts.roboto(
+      fontSize: 18,
+      color: Colors.black87,
+      fontWeight: FontWeight.w700,
+    );
+    TextStyle storeNameTextStyle = GoogleFonts.roboto(
+      fontSize: 18,
+      color: Colors.black87,
+      fontWeight: FontWeight.w700,
+    );
+    TextStyle addAndChatTextStyle = GoogleFonts.roboto(
+      fontSize: 15,
+      color: Colors.white,
       fontWeight: FontWeight.w700,
     );
 
@@ -73,146 +110,427 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height / 6,
-                child: imageUrls.isNotEmpty
-                    ? Image.network(
-                        imageUrls[selectedImageIndex],
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Image.network('https://via.placeholder.com/400',
-                                fit: BoxFit.cover),
-                      )
-                    : Image.network('https://via.placeholder.com/400',
-                        fit: BoxFit.cover),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 60,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: imageUrls.length,
-              itemBuilder: (context, index) => GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedImageIndex = index;
-                  });
-                },
-                child: Container(
-                  width: 70,
-                  margin: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: selectedImageIndex == index
-                          ? const Color(0xFF153167)
-                          : Colors.grey,
-                      width: 1,
-                    ),
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Image.network(
-                    imageUrls[index],
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Image.network(
-                        'https://via.placeholder.com/100',
-                        fit: BoxFit.cover),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              color: const Color(0xFF153448),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height / 6,
+                    child: imageUrls.isNotEmpty
+                        ? Image.network(
+                            imageUrls[selectedImageIndex],
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image.network('https://via.placeholder.com/400',
+                                    fit: BoxFit.cover),
+                          )
+                        : Image.network('https://via.placeholder.com/400',
+                            fit: BoxFit.cover),
                   ),
                 ),
               ),
             ),
-          ),
-          const Divider(height: 20),
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.productDetail != null
-                      ? widget.productDetail['productName'] ?? 'No Product Name'
-                      : 'No Product Name',
-                  style: productNameStyle,
-                ),
-                Text(
-                  '\$${widget.productDetail?['productPrice']?.toString() ?? '0'}',
-                  style: productPriceStyle,
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Size',
-                  style: sizeTextStyle,
-                ),
-                InkWell(
-                  onTap: () {
-                    print("size guide");
-                  },
-                  child: Text(
-                    'Size Guide',
-                    style: sizeGuideTextStyle,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Column(
-              children: [
-                Wrap(
-                  spacing: 8.0,
-                  runSpacing: 4.0,
-                  children: List<Widget>.generate(sizes.length, (int index) {
-                    bool isSelected = selectedSizeIndex == index;
-                    return ChoiceChip(
-                      label: Text(
-                        sizes[index],
-                        style: GoogleFonts.roboto(
-                          color: isSelected ? Colors.white : Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+            SizedBox(
+              height: 60,
+              child: Container(
+                color: Colors.white,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: imageUrls.length,
+                  itemBuilder: (context, index) => GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedImageIndex = index;
+                      });
+                    },
+                    child: Container(
+                      width: 70,
+                      margin: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: selectedImageIndex == index
+                              ? const Color(0xFF153167)
+                              : Colors.green,
+                          width: 1,
+                        ),
+                        color: const Color(0xFF153167),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Image.network(
+                          imageUrls[index],
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.network('https://via.placeholder.com/100',
+                                  fit: BoxFit.cover),
                         ),
                       ),
-                      selected: isSelected,
-                      selectedColor: const Color(0xFF4F7ED9),
-                      onSelected: (bool selected) {
-                        setState(() {
-                          selectedSizeIndex = selected ? index : null;
-                        });
-                      },
-                      backgroundColor: Colors.transparent,
-                      elevation: 1,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 3),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        side: BorderSide(
-                            color: selectedSizeIndex == index
-                                ? Colors.transparent
-                                : Colors.grey,
-                            width: 1),
-                      ),
-                    );
-                  }),
-                )
-              ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-          )
-        ],
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.productDetail != null
+                        ? widget.productDetail['productName'] ??
+                            'No Product Name'
+                        : 'No Product Name',
+                    style: productNameStyle,
+                  ),
+                  Text(
+                    '\$${widget.productDetail?['productPrice']?.toString() ?? '0'}',
+                    style: productPriceStyle,
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Size',
+                        style: sizeTextStyle,
+                      ),
+                      const SizedBox(
+                        width: 6.0,
+                      ),
+                      const Icon(
+                        Icons.straight,
+                        size: 20,
+                        color: Color(0xFF153448),
+                      )
+                    ],
+                  ),
+                  InkWell(
+                    onTap: () {
+                      print("size guide");
+                    },
+                    child: Text(
+                      'Size Guide',
+                      style: sizeGuideTextStyle,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Column(
+                children: [
+                  Wrap(
+                    spacing: 5.0,
+                    runSpacing: 4.0,
+                    children: List<Widget>.generate(sizes.length, (int index) {
+                      bool isSelected = selectedSizeIndex == index;
+                      return ChoiceChip(
+                        label: Text(
+                          sizes[index],
+                          style: GoogleFonts.roboto(
+                            color: isSelected ? Colors.white : Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFF4F7ED9),
+                        onSelected: (bool selected) {
+                          setState(() {
+                            selectedSizeIndex = selected ? index : null;
+                          });
+                        },
+                        backgroundColor: Colors.transparent,
+                        elevation: 1,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                              color: selectedSizeIndex == index
+                                  ? Colors.transparent
+                                  : Colors.grey,
+                              width: 1),
+                        ),
+                      );
+                    }),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Color',
+                        style: sizeTextStyle,
+                      ),
+                      const SizedBox(
+                        width: 6.0,
+                      ),
+                      const Icon(
+                        Icons.color_lens_sharp,
+                        size: 20,
+                        color: Color(0xFF153448),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Column(
+                children: [
+                  Wrap(
+                    spacing: 5.0,
+                    runSpacing: 4.0,
+                    children: List<Widget>.generate(colors.length, (int index) {
+                      bool isSelectedColor = selectedColorIndex == index;
+                      return ChoiceChip(
+                        label: Text(
+                          colors[index],
+                          style: GoogleFonts.roboto(
+                            color:
+                                isSelectedColor ? Colors.white : Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        selected: isSelectedColor,
+                        selectedColor: const Color(0xFF4F7ED9),
+                        onSelected: (bool selected) {
+                          setState(() {
+                            selectedColorIndex = selected ? index : null;
+                          });
+                        },
+                        backgroundColor: Colors.transparent,
+                        elevation: 1,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                              color: selectedColorIndex == index
+                                  ? Colors.transparent
+                                  : Colors.grey,
+                              width: 1),
+                        ),
+                      );
+                    }),
+                  )
+                ],
+              ),
+            ),
+            // description
+            Padding(
+              padding: const EdgeInsets.only(left: 10, top: 10),
+              child: Row(
+                children: [
+                  Text(
+                    'Description',
+                    style: descriptionSubTextStyle,
+                  ),
+                  const SizedBox(
+                    width: 6.0,
+                  ),
+                  const Icon(
+                    Icons.info,
+                    size: 20,
+                    color: Color(0xFF153448),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: Text(
+                description,
+                style: descriptionTextStyle,
+                textAlign: TextAlign.justify,
+              ),
+            ),
+            // review product
+            Padding(
+              padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
+              child: Row(
+                children: [
+                  Text(
+                    'Reviews ($totalReviews)',
+                    style: reviewSubTextStyle,
+                  ),
+                  const Spacer(),
+                  const Icon(Icons.star, color: Colors.amber, size: 20),
+                  Text(
+                    '$averageRating',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to reviews page
+                      print("Navigate to reviews page");
+                    },
+                    child: Text(
+                      'View All',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 16,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // store detail
+            Padding(
+              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+              child: Row(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF0C2D57),
+                      border: Border.all(
+                        color: Colors.blue,
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Image.network(
+                          storeImage,
+                          width: 45,
+                          height: 50,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              storeName,
+                              style: storeNameTextStyle,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            const Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 15,
+                            )
+                          ],
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            print("Navigate to store's page");
+                          },
+                          child: Text(
+                            "View Store",
+                            style: GoogleFonts.roboto(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      // chat button
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(8.0),
+        child: SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.shopping_cart),
+                  label: Text(
+                    "Add to Cart",
+                    style: addAndChatTextStyle,
+                  ),
+                  onPressed: () {
+                    // Handle add to cart action
+                    print("Add to cart");
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0C2D57),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.message),
+                  label: Text("Chat with Store", style: addAndChatTextStyle),
+                  onPressed: () {
+                    // Handle chat with store action
+                    print("Chat with store");
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF8A9418),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

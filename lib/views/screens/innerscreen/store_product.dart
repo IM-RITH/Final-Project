@@ -22,9 +22,13 @@ class _StoreProductScreenState extends State<StoreProductScreen> {
         .snapshots();
 
     TextStyle storeNameStyle = GoogleFonts.roboto(
-        color: Colors.black87, fontSize: 20, fontWeight: FontWeight.bold);
+      color: Colors.white,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    );
 
     return Scaffold(
+      backgroundColor: const Color(0xFF474747),
       appBar: AppBar(
         title: Text(
           widget.storeData["storeName"],
@@ -36,111 +40,117 @@ class _StoreProductScreenState extends State<StoreProductScreen> {
         backgroundColor: const Color(0xFF153167),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Center(
-              child: Column(
-                children: [
-                  Container(
-                    width: 100,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF0C2D57),
-                      border: Border.all(
-                        color: Colors.blue,
-                        width: 2,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF0C2D57),
+                        border: Border.all(color: Colors.blue, width: 2),
                       ),
-                    ),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: ClipOval(
-                        child: Image.network(
-                          widget.storeData["storeImage"] ?? '',
-                          width: 80,
-                          height: 110,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const CircleAvatar(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: ClipOval(
+                          child: Image.network(
+                            widget.storeData["storeImage"] ?? '',
+                            width: 80,
+                            height: 110,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const CircleAvatar(
                               radius: 60,
                               backgroundColor: Colors.grey,
                               child: Icon(Icons.store, size: 60),
-                            );
-                          },
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        widget.storeData["storeName"] ?? 'No Name',
-                        style: storeNameStyle,
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.check_circle,
-                          color: Colors.green, size: 15),
-                    ],
-                  ),
-                ],
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(widget.storeData["storeName"] ?? 'No Name',
+                            style: storeNameStyle),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.check_circle,
+                            color: Colors.green, size: 15),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
+            const Padding(
+              padding: EdgeInsets.only(top: 8, left: 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Product List',
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              ),
+            ),
+            StreamBuilder<QuerySnapshot>(
               stream: storeStream,
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
                   return const Text('Something went wrong');
                 }
-
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
-
                 if (snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No Store found'));
+                  return const Center(child: Text('No Products Found'));
                 }
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(5),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.95,
-                  ),
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    Map<String, dynamic> data = snapshot.data!.docs[index]
-                        .data() as Map<String, dynamic>;
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return ProductDetailScreen(
-                            productDetail: data,
-                          );
-                        }));
-                      },
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      child: ProductWidget(
-                        productData: data,
+                return Padding(
+                  padding: const EdgeInsets.only(left: 5.0, top: 8.0),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: GridView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 0.95,
                       ),
-                    );
-                  },
+                      itemBuilder: (context, index) {
+                        Map<String, dynamic> data = snapshot.data!.docs[index]
+                            .data() as Map<String, dynamic>;
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return ProductDetailScreen(
+                                productDetail: data,
+                              );
+                            }));
+                          },
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          child: ProductWidget(productData: data),
+                        );
+                      },
+                    ),
+                  ),
                 );
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

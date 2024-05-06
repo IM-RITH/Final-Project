@@ -79,7 +79,7 @@ class _SeeAllStoreScreenState extends State<SeeAllStoreScreen> {
                       ),
                     ),
                   ),
-                  subtitle: Row(
+                  subtitle: const Row(
                     children: [
                       Icon(Icons.arrow_forward,
                           color: Colors.deepPurple, size: 20),
