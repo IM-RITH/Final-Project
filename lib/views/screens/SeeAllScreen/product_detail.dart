@@ -1,3 +1,4 @@
+import 'package:easyshop/views/screens/innerscreen/store_product.dart';
 import 'package:easyshop/views/screens/main_screen/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -457,24 +458,43 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             )
                           ],
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            print("Navigate to store's page");
-                          },
-                          child: Text(
-                            "View Store",
-                            style: GoogleFonts.roboto(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold),
-                          ),
+                        Text(
+                          "View Store",
+                          style: GoogleFonts.roboto(
+                              color: Colors.grey, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 20,
-                    color: Theme.of(context).primaryColor,
+                  GestureDetector(
+                    onTap: () {
+                      var storeName = widget.productDetail['storeName'];
+                      var storeImage = widget.productDetail['storeImage'];
+                      if (storeName != null && storeImage != null) {
+                        // Prepare the store data map
+                        Map<String, dynamic> storeData = {
+                          'storeName': storeName,
+                          'storeImage': storeImage
+                        };
+
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return StoreProductScreen(storeData: storeData);
+                        }));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Store details are not available."),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                    child: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                 ],
               ),
