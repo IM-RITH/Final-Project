@@ -34,7 +34,7 @@ class _StoreProductScreenState extends State<StoreProductScreen> {
           widget.storeData["storeName"],
           style: GoogleFonts.poppins(
             textStyle: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+                fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
           ),
         ),
         backgroundColor: const Color(0xFF153167),

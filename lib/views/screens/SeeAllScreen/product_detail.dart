@@ -1,18 +1,21 @@
+import 'package:easyshop/provider/cart_provider.dart';
 import 'package:easyshop/views/screens/innerscreen/store_product.dart';
 import 'package:easyshop/views/screens/main_screen/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProductDetailScreen extends StatefulWidget {
+class ProductDetailScreen extends ConsumerStatefulWidget {
   final dynamic productDetail;
 
   const ProductDetailScreen({super.key, required this.productDetail});
 
   @override
-  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+  _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
-class _ProductDetailScreenState extends State<ProductDetailScreen> {
+class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   bool isBookmarked = false;
   int selectedImageIndex = 0;
   int? selectedSizeIndex;
@@ -22,6 +25,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _cartProvider = ref.read(cartProvider.notifier);
     List<String> imageUrls = [];
     if (widget.productDetail != null &&
         widget.productDetail['imageUrlList'] is List) {
@@ -44,12 +48,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     TextStyle productNameStyle = GoogleFonts.roboto(
       fontSize: 20,
       color: Colors.black87,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.bold,
+    );
+    TextStyle instockStyle = GoogleFonts.roboto(
+      fontSize: 18,
+      color: Colors.black38,
+      fontWeight: FontWeight.w600,
     );
     TextStyle productPriceStyle = GoogleFonts.poppins(
       fontSize: 21,
       color: const Color(0xFF012E87),
       fontWeight: FontWeight.w700,
+    );
+    TextStyle productDisPriceStyle = GoogleFonts.poppins(
+      fontSize: 19,
+      color: Colors.grey,
+      decoration: TextDecoration.lineThrough,
+      fontWeight: FontWeight.w600,
     );
     TextStyle sizeTextStyle = GoogleFonts.roboto(
       fontSize: 18,
@@ -58,8 +73,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
     TextStyle sizeGuideTextStyle = GoogleFonts.roboto(
       fontSize: 18,
-      fontWeight: FontWeight.w700,
-      color: Colors.black54,
+      fontWeight: FontWeight.w600,
+      color: Colors.black38,
     );
     TextStyle descriptionSubTextStyle = GoogleFonts.roboto(
       fontSize: 18,
@@ -181,20 +196,40 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               height: 10,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 8.0),
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.productDetail != null
-                        ? widget.productDetail['productName'] ??
-                            'No Product Name'
-                        : 'No Product Name',
-                    style: productNameStyle,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.productDetail != null
+                            ? widget.productDetail['productName'] ??
+                                'No Product Name'
+                            : 'No Product Name',
+                        style: productNameStyle,
+                      ),
+                      Text(
+                        widget.productDetail != null
+                            ? widget.productDetail['instock'] ?? 'Out Of Stock'
+                            : 'No Stock',
+                        style: instockStyle,
+                      ),
+                    ],
                   ),
-                  Text(
-                    '\$${widget.productDetail?['productPrice']?.toString() ?? '0'}',
-                    style: productPriceStyle,
+                  Row(
+                    children: [
+                      Text(
+                        '\$${widget.productDetail?['productDisPrice']?.toString() ?? '0'}',
+                        style: productPriceStyle,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '\$${widget.productDetail?['productPrice']?.toString() ?? '0'}',
+                        style: productDisPriceStyle,
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -384,6 +419,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   const Spacer(),
                   const Icon(Icons.star, color: Colors.amber, size: 20),
+                  const SizedBox(
+                    width: 2,
+                  ),
                   Text(
                     '$averageRating',
                     style: const TextStyle(
@@ -518,8 +556,30 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     style: addAndChatTextStyle,
                   ),
                   onPressed: () {
-                    // Handle add to cart action
-                    print("Add to cart");
+                    _cartProvider.addProductToCart(
+                        productName: widget.productDetail['productName'],
+                        productPrice: widget.productDetail['productPrice'],
+                        imageUrlList: widget.productDetail['imageUrlList'],
+                        productQuantity: 1,
+                        productSize: '',
+                        productColor: '',
+                        // instock: widget.productDetail['instock'],
+                        productDisPrice:
+                            widget.productDetail['productDisPrice'],
+                        productDescription:
+                            widget.productDetail['productDescription'],
+                        productId: widget.productDetail['productId']);
+
+                    Get.snackbar(
+                      'Product',
+                      'Added Successfully',
+                      snackPosition: SnackPosition.TOP,
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                      borderRadius: 10,
+                      margin: const EdgeInsets.all(10),
+                      duration: const Duration(seconds: 2),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0C2D57),
