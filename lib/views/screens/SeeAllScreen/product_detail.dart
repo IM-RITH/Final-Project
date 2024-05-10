@@ -1,4 +1,6 @@
 import 'package:easyshop/provider/cart_provider.dart';
+import 'package:easyshop/provider/select_color.dart';
+import 'package:easyshop/provider/select_size_provider.dart';
 import 'package:easyshop/views/screens/innerscreen/store_product.dart';
 import 'package:easyshop/views/screens/main_screen/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final _cartProvider = ref.read(cartProvider.notifier);
+
+    // select size product
+    final selectSize = ref.watch(
+      selectSizeProvider(
+        widget.productDetail['productId'],
+      ),
+    );
+
+    // select color
+    final selectColor = ref.watch(
+      selectColorProvider(
+        widget.productDetail['productId'],
+      ),
+    );
     List<String> imageUrls = [];
     if (widget.productDetail != null &&
         widget.productDetail['imageUrlList'] is List) {
@@ -276,7 +292,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     spacing: 5.0,
                     runSpacing: 4.0,
                     children: List<Widget>.generate(sizes.length, (int index) {
-                      bool isSelected = selectedSizeIndex == index;
+                      bool isSelected = selectSize == sizes[index];
                       return ChoiceChip(
                         label: Text(
                           sizes[index],
@@ -289,9 +305,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         selected: isSelected,
                         selectedColor: const Color(0xFF4F7ED9),
                         onSelected: (bool selected) {
-                          setState(() {
-                            selectedSizeIndex = selected ? index : null;
-                          });
+                          if (selected) {
+                            ref
+                                .read(selectSizeProvider(
+                                        widget.productDetail['productId'])
+                                    .notifier)
+                                .selectSize(sizes[index]);
+                          } else {
+                            ref
+                                .read(selectSizeProvider(
+                                        widget.productDetail['productId'])
+                                    .notifier)
+                                .selectSize("");
+                          }
                         },
                         backgroundColor: Colors.transparent,
                         elevation: 1,
@@ -300,9 +326,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                           side: BorderSide(
-                              color: selectedSizeIndex == index
-                                  ? Colors.transparent
-                                  : Colors.grey,
+                              color:
+                                  isSelected ? Colors.transparent : Colors.grey,
                               width: 1),
                         ),
                       );
@@ -344,7 +369,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     spacing: 5.0,
                     runSpacing: 4.0,
                     children: List<Widget>.generate(colors.length, (int index) {
-                      bool isSelectedColor = selectedColorIndex == index;
+                      bool isSelectedColor = selectColor == colors[index];
                       return ChoiceChip(
                         label: Text(
                           colors[index],
@@ -357,10 +382,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         ),
                         selected: isSelectedColor,
                         selectedColor: const Color(0xFF4F7ED9),
-                        onSelected: (bool selected) {
-                          setState(() {
-                            selectedColorIndex = selected ? index : null;
-                          });
+                        onSelected: (bool selectedColor) {
+                          if (selectedColor) {
+                            ref
+                                .read(selectColorProvider(
+                                        widget.productDetail['productId'])
+                                    .notifier)
+                                .selectColor(colors[index]);
+                          } else {
+                            ref
+                                .read(selectColorProvider(
+                                        widget.productDetail['productId'])
+                                    .notifier)
+                                .selectColor("");
+                          }
                         },
                         backgroundColor: Colors.transparent,
                         elevation: 1,
@@ -369,7 +404,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                           side: BorderSide(
-                              color: selectedColorIndex == index
+                              color: isSelectedColor
                                   ? Colors.transparent
                                   : Colors.grey,
                               width: 1),
@@ -561,9 +596,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         productPrice: widget.productDetail['productPrice'],
                         imageUrlList: widget.productDetail['imageUrlList'],
                         productQuantity: 1,
-                        productSize: '',
-                        productColor: '',
-                        // instock: widget.productDetail['instock'],
+                        productSize: selectSize,
+                        productColor: selectColor,
                         productDisPrice:
                             widget.productDetail['productDisPrice'],
                         productDescription:
@@ -577,7 +611,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       backgroundColor: Colors.green,
                       colorText: Colors.white,
                       borderRadius: 10,
-                      margin: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(5),
                       duration: const Duration(seconds: 2),
                     );
                   },

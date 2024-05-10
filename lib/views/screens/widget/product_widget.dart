@@ -143,7 +143,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   },
                   splashColor: Colors.transparent,
                   child: const Center(
-                    child: Icon(Icons.add, color: Colors.white, size: 20),
+                    child: Icon(Icons.forward, color: Colors.white, size: 18),
                   ),
                 ),
               ),

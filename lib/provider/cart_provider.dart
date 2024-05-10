@@ -18,7 +18,6 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
     required int productQuantity,
     required String productSize,
     required String productColor,
-    // required String instock,
     required double productDisPrice,
     required String productDescription,
     required String productId,

@@ -32,7 +32,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 'Your cart is empty',
                 style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: Colors.grey.shade600),
               ),
             )
