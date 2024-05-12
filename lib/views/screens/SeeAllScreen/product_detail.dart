@@ -1,4 +1,5 @@
 import 'package:easyshop/provider/cart_provider.dart';
+import 'package:easyshop/provider/favorite_provider.dart';
 import 'package:easyshop/provider/select_color.dart';
 import 'package:easyshop/provider/select_size_provider.dart';
 import 'package:easyshop/views/screens/innerscreen/store_product.dart';
@@ -26,8 +27,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   int totalReviews = 200;
 
   @override
+  void initState() {
+    super.initState();
+    isBookmarked = ref
+        .read(favoriteProvider)
+        .containsKey(widget.productDetail['productId']);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final _cartProvider = ref.read(cartProvider.notifier);
+    final _favoriteProvider = ref.read(favoriteProvider.notifier);
+    final favorites = ref.watch(favoriteProvider);
+    isBookmarked = favorites.containsKey(widget.productDetail['productId']);
 
     // select size product
     final selectSize = ref.watch(
@@ -42,6 +54,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         widget.productDetail['productId'],
       ),
     );
+
     List<String> imageUrls = [];
     if (widget.productDetail != null &&
         widget.productDetail['imageUrlList'] is List) {
@@ -138,6 +151,40 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               setState(() {
                 isBookmarked = !isBookmarked;
               });
+
+              if (isBookmarked) {
+                _favoriteProvider.addToFavorite(
+                  widget.productDetail['productName'],
+                  widget.productDetail['productPrice'],
+                  widget.productDetail['imageUrlList'],
+                  // widget.productDetail['productDescription'],
+                  widget.productDetail['productDisPrice'],
+                  widget.productDetail['productId'],
+                );
+                Get.snackbar(
+                  'Favorites',
+                  'Added to Favorites',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.green,
+                  colorText: Colors.white,
+                  borderRadius: 10,
+                  margin: const EdgeInsets.all(5),
+                  duration: const Duration(seconds: 2),
+                );
+              } else {
+                _favoriteProvider
+                    .removeFavorite(widget.productDetail['productId']);
+                Get.snackbar(
+                  'Favorites',
+                  'Removed from Favorites',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  borderRadius: 10,
+                  margin: const EdgeInsets.all(5),
+                  duration: const Duration(seconds: 2),
+                );
+              }
             },
           ),
         ],

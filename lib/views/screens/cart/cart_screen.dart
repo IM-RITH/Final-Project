@@ -14,6 +14,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   Widget build(BuildContext context) {
     final cartInfo = ref.watch(cartProvider);
     final _cartProvider = ref.read(cartProvider.notifier);
+    final totalAmount = ref.read(cartProvider.notifier).totalPrice();
     TextStyle productNameStyle = const TextStyle(
       fontSize: 18,
       color: Colors.white,
@@ -165,7 +166,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                                               ),
                                               TextSpan(
                                                 text:
-                                                    '\$${cartItem.productPrice}',
+                                                    '\$${cartItem.productDisPrice}',
                                                 style: const TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 15,
@@ -234,23 +235,23 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 ),
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        height: 40,
-                        width: 220,
+                        height: 45,
+                        width: 200,
                         decoration: BoxDecoration(
                           color: const Color(0xFF8A9418),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(7),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            'Total',
-                            style: TextStyle(
+                            'Total: \$${totalAmount.toStringAsFixed(2)}',
+                            style: const TextStyle(
                                 fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.white),
                           ),
                         ),
@@ -263,11 +264,27 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                           backgroundColor: const Color(0xFF012E87),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
+                              borderRadius: BorderRadius.circular(7)),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 10),
                         ),
-                        child: const Text('Checkout'),
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.payment,
+                            ),
+                            SizedBox(
+                              width: 8.0,
+                            ),
+                            Text(
+                              'Checkout',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

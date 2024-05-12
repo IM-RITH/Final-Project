@@ -1,18 +1,19 @@
+import 'package:easyshop/provider/favorite_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProductWidget extends StatefulWidget {
+class ProductWidget extends ConsumerWidget {
   final dynamic productData;
 
   const ProductWidget({super.key, required this.productData});
 
   @override
-  State<ProductWidget> createState() => _ProductWidgetState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Check if the product is favorited
+    final isFavorited =
+        ref.watch(favoriteProvider).containsKey(productData['productId']);
 
-class _ProductWidgetState extends State<ProductWidget> {
-  @override
-  Widget build(BuildContext context) {
     TextStyle productName = GoogleFonts.roboto(
         fontSize: 15,
         color: Colors.white,
@@ -35,13 +36,13 @@ class _ProductWidgetState extends State<ProductWidget> {
           end: Alignment.bottomLeft,
           stops: const [0.1, 0.9],
           colors: [
-            const Color(0xFF0C2D57).withOpacity(0.9),
-            const Color(0xFF0C2D57).withOpacity(0.8),
+            const Color(0xFF0C2D57).withOpacity(1),
+            const Color(0xFF0C2D57).withOpacity(1),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.white.withOpacity(0.5),
             blurRadius: 10,
             spreadRadius: 2,
             offset: const Offset(0, 4),
@@ -60,7 +61,7 @@ class _ProductWidgetState extends State<ProductWidget> {
               child: Align(
                 alignment: Alignment.center,
                 child: Image.network(
-                  widget.productData['imageUrlList'][0],
+                  productData['imageUrlList'][0],
                   fit: BoxFit.cover,
                   width: 85,
                   height: 110,
@@ -80,12 +81,27 @@ class _ProductWidgetState extends State<ProductWidget> {
                 elevation: 4,
                 child: InkWell(
                   onTap: () {
-                    // Add to cart or wishlist
+                    if (isFavorited) {
+                      ref
+                          .read(favoriteProvider.notifier)
+                          .removeFavorite(productData['productId']);
+                    } else {
+                      ref.read(favoriteProvider.notifier).addToFavorite(
+                            productData['productName'],
+                            productData['productPrice'],
+                            productData['imageUrlList'],
+                            productData['productDisPrice'],
+                            productData['productId'],
+                          );
+                    }
                   },
                   splashColor: Colors.transparent,
-                  child: const Center(
-                    child: Icon(Icons.bookmark_border,
-                        color: Colors.white, size: 20),
+                  highlightColor: Colors.transparent,
+                  child: Center(
+                    child: Icon(
+                        isFavorited ? Icons.bookmark : Icons.bookmark_border,
+                        color: Colors.white,
+                        size: 20),
                   ),
                 ),
               ),
@@ -117,11 +133,11 @@ class _ProductWidgetState extends State<ProductWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.productData['productName'],
+                  productData['productName'],
                   style: productName,
                 ),
                 Text(
-                  '\$${widget.productData['productPrice']}',
+                  '\$${productData['productPrice']}',
                   style: productPrice,
                 ),
               ],
