@@ -1,3 +1,4 @@
+import 'package:easyshop/models/favorite_model.dart';
 import 'package:easyshop/provider/cart_provider.dart';
 import 'package:easyshop/provider/favorite_provider.dart';
 import 'package:easyshop/provider/select_color.dart';
@@ -29,9 +30,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
-    isBookmarked = ref
-        .read(favoriteProvider)
-        .containsKey(widget.productDetail['productId']);
+    // Check if the productDetail is an instance of FavoriteModel
+    if (widget.productDetail is FavoriteModel) {
+      isBookmarked = ref
+          .read(favoriteProvider)
+          .containsKey(widget.productDetail["productId"]);
+    }
   }
 
   @override
@@ -153,13 +157,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               });
 
               if (isBookmarked) {
+                double productPrice = double.tryParse(
+                        widget.productDetail['productPrice'].toString()) ??
+                    0.0;
+                double productDisPrice = double.tryParse(
+                        widget.productDetail['productDisPrice'].toString()) ??
+                    0.0;
+
                 _favoriteProvider.addToFavorite(
                   widget.productDetail['productName'],
-                  widget.productDetail['productPrice'],
+                  productPrice,
                   widget.productDetail['imageUrlList'],
-                  // widget.productDetail['productDescription'],
-                  widget.productDetail['productDisPrice'],
+                  productDisPrice,
                   widget.productDetail['productId'],
+                  // widget.productDetail['productDescription'],
+                  // widget.productDetail['productQuantity'],
+                  // widget.productDetail['sizeList'],
+                  // widget.productDetail['colorList'],
                 );
                 Get.snackbar(
                   'Favorites',

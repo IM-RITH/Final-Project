@@ -1,6 +1,7 @@
 import 'package:easyshop/provider/favorite_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProductWidget extends ConsumerWidget {
@@ -87,12 +88,26 @@ class ProductWidget extends ConsumerWidget {
                           .removeFavorite(productData['productId']);
                     } else {
                       ref.read(favoriteProvider.notifier).addToFavorite(
-                            productData['productName'],
-                            productData['productPrice'],
-                            productData['imageUrlList'],
-                            productData['productDisPrice'],
-                            productData['productId'],
+                          productData['productName'],
+                          productData['productPrice'],
+                          productData['imageUrlList'],
+                          productData['productDisPrice'],
+                          productData['productId'],
+                          // productData['productDescription'],
+                          // productData['productQuantity'],
+                          // productData['sizeList'],
+                          // productData['colorList']
                           );
+                      Get.snackbar(
+                        'Favorites',
+                        'Added to Favorites',
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: Colors.green,
+                        colorText: Colors.white,
+                        borderRadius: 10,
+                        margin: const EdgeInsets.all(5),
+                        duration: const Duration(seconds: 2),
+                      );
                     }
                   },
                   splashColor: Colors.transparent,

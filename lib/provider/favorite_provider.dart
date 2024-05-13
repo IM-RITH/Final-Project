@@ -8,6 +8,7 @@ final favoriteProvider =
 
 class FavoriteNotifier extends StateNotifier<Map<String, FavoriteModel>> {
   FavoriteNotifier() : super({});
+  bool _hasViewedFavorite = false;
 
   void addToFavorite(
     String productName,
@@ -15,6 +16,10 @@ class FavoriteNotifier extends StateNotifier<Map<String, FavoriteModel>> {
     List imageUrlList,
     double productDisPrice,
     String productId,
+    // String productDescription,
+    // int productQuantity,
+    // String productSize,
+    // String productColor,
   ) {
     state[productId] = FavoriteModel(
       productName: productName,
@@ -22,14 +27,29 @@ class FavoriteNotifier extends StateNotifier<Map<String, FavoriteModel>> {
       imageUrlList: imageUrlList,
       productDisPrice: productDisPrice,
       productId: productId,
+      // productDescription: productDescription,
+      // productSize: productSize,
+      // productColor: productColor
     );
     state = {...state};
+    _hasViewedFavorite = false;
   }
 
+  void setViewedFavorite(bool viewed) {
+    _hasViewedFavorite = viewed;
+  }
+
+  bool get hasViewedFavorite => _hasViewedFavorite;
   // remove favorite product
 
   void removeFavorite(String productId) {
     state.remove(productId);
+    state = {...state};
+  }
+
+  // remove all favorite from screen
+  void clearAllFromScreen() {
+    state.clear();
     state = {...state};
   }
 
