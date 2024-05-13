@@ -1,4 +1,6 @@
+import 'package:easyshop/views/screens/SeeAllScreen/all_product_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TextWidget extends StatefulWidget {
@@ -28,7 +30,9 @@ class _ProductWidgetState extends State<TextWidget> {
             children: [
               Text('Latest Product', style: headerStyle),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Get.to(() => const AllProductScreen());
+                },
                 child: Text('See all', style: seeAllStyle),
               ),
             ],

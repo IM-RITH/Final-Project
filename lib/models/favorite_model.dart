@@ -19,5 +19,4 @@ class FavoriteModel {
     // required this.productSize,
     // required this.productColor
   });
-  // final String vendorId;
 }

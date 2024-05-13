@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
                   CategoryWidget(),
                   SizedBox(height: 15.0),
                   StoreWidget(),
-                  SizedBox(height: 15.0),
+                  SizedBox(height: 10.0),
                   TextWidget(),
                   SizedBox(height: 1.0),
                   RecommendProduct(),

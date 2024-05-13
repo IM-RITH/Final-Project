@@ -34,7 +34,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     if (widget.productDetail is FavoriteModel) {
       isBookmarked = ref
           .read(favoriteProvider)
-          .containsKey(widget.productDetail["productId"]);
+          .containsKey(widget.productDetail.productId);
+    } else if (widget.productDetail is Map) {
+      isBookmarked = ref
+          .read(favoriteProvider)
+          .containsKey(widget.productDetail['productId']);
     }
   }
 

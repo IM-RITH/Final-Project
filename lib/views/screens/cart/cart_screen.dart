@@ -1,6 +1,8 @@
 import 'package:easyshop/provider/cart_provider.dart';
+import 'package:easyshop/views/screens/innerscreen/checkout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
@@ -258,7 +260,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          // Handle checkout action
+                          Get.to(
+                            () => const CheckOutScreen(),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF012E87),

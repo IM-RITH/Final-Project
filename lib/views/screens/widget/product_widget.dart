@@ -56,15 +56,15 @@ class ProductWidget extends ConsumerWidget {
             top: 0,
             left: 0,
             right: 0,
-            bottom: 40,
+            bottom: 30,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Align(
                 alignment: Alignment.center,
                 child: Image.network(
                   productData['imageUrlList'][0],
-                  fit: BoxFit.cover,
-                  width: 85,
+                  fit: BoxFit.contain,
+                  width: 110,
                   height: 110,
                 ),
               ),
@@ -88,15 +88,15 @@ class ProductWidget extends ConsumerWidget {
                           .removeFavorite(productData['productId']);
                     } else {
                       ref.read(favoriteProvider.notifier).addToFavorite(
-                          productData['productName'],
-                          productData['productPrice'],
-                          productData['imageUrlList'],
-                          productData['productDisPrice'],
-                          productData['productId'],
-                          // productData['productDescription'],
-                          // productData['productQuantity'],
-                          // productData['sizeList'],
-                          // productData['colorList']
+                            productData['productName'],
+                            productData['productPrice'],
+                            productData['imageUrlList'],
+                            productData['productDisPrice'],
+                            productData['productId'],
+                            // productData['productDescription'],
+                            // productData['productQuantity'],
+                            // productData['sizeList'],
+                            // productData['colorList']
                           );
                       Get.snackbar(
                         'Favorites',

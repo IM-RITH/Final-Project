@@ -1,5 +1,4 @@
 import 'package:easyshop/models/favorite_model.dart';
-import 'package:easyshop/models/product_model.dart';
 import 'package:easyshop/provider/favorite_provider.dart';
 import 'package:easyshop/views/screens/SeeAllScreen/product_detail.dart';
 import 'package:flutter/material.dart';
@@ -152,12 +151,12 @@ class _BookMarkScreenState extends ConsumerState<BookMarkScreen> {
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return ProductDetailScreen(
-                              productDetail: favorite,
-                            );
-                          }));
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) {
+                          //   return ProductDetailScreen(
+                          //     productDetail: favorite,
+                          //   );
+                          // }));
                         },
                       ),
                     ),

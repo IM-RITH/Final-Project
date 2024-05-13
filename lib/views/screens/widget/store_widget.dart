@@ -35,7 +35,7 @@ class _StoreWidgetState extends State<StoreWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -52,7 +52,7 @@ class _StoreWidgetState extends State<StoreWidget> {
             ),
           ),
           SizedBox(
-            height: 90,
+            height: 100, // Adjusted height for better layout
             child: ListView.builder(
               itemCount: _storeController.stores.length,
               scrollDirection: Axis.horizontal,
@@ -75,8 +75,8 @@ class _StoreWidgetState extends State<StoreWidget> {
                     );
                   },
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 12, right: 10, top: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 6.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -93,20 +93,22 @@ class _StoreWidgetState extends State<StoreWidget> {
                             padding: const EdgeInsets.all(5),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(30),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Image.network(
-                                  _storeController.stores[index].storeImage,
-                                  fit: BoxFit.cover,
-                                ),
+                              child: Image.network(
+                                _storeController.stores[index].storeImage,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text(
-                          _storeController.stores[index].storeName,
-                          style: cateName,
+                        SizedBox(
+                          width: 60,
+                          child: Text(
+                            _storeController.stores[index].storeName,
+                            style: cateName,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
