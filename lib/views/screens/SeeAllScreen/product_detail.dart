@@ -174,6 +174,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   widget.productDetail['imageUrlList'],
                   productDisPrice,
                   widget.productDetail['productId'],
+                  // widget.productDetail['vendorId'],
                   // widget.productDetail['productDescription'],
                   // widget.productDetail['productQuantity'],
                   // widget.productDetail['sizeList'],
@@ -656,18 +657,49 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     style: addAndChatTextStyle,
                   ),
                   onPressed: () {
+                    // Check if size is selected
+                    if (selectSize.isEmpty) {
+                      Get.snackbar(
+                        'Size Required',
+                        'Please select a size.',
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                        borderRadius: 10,
+                        margin: const EdgeInsets.all(5),
+                        duration: const Duration(seconds: 2),
+                      );
+                      return;
+                    }
+
+                    // Check if color is selected
+                    if (selectColor.isEmpty) {
+                      Get.snackbar(
+                        'Color Required',
+                        'Please select a color.',
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                        borderRadius: 10,
+                        margin: const EdgeInsets.all(5),
+                        duration: const Duration(seconds: 2),
+                      );
+                      return;
+                    }
+
                     _cartProvider.addProductToCart(
-                        productName: widget.productDetail['productName'],
-                        productPrice: widget.productDetail['productPrice'],
-                        imageUrlList: widget.productDetail['imageUrlList'],
-                        productQuantity: 1,
-                        productSize: selectSize,
-                        productColor: selectColor,
-                        productDisPrice:
-                            widget.productDetail['productDisPrice'],
-                        productDescription:
-                            widget.productDetail['productDescription'],
-                        productId: widget.productDetail['productId']);
+                      productName: widget.productDetail['productName'],
+                      productPrice: widget.productDetail['productPrice'],
+                      imageUrlList: widget.productDetail['imageUrlList'],
+                      productQuantity: 1,
+                      productSize: selectSize,
+                      productColor: selectColor,
+                      productDisPrice: widget.productDetail['productDisPrice'],
+                      productDescription:
+                          widget.productDetail['productDescription'],
+                      productId: widget.productDetail['productId'],
+                      // storeName: widget.productDetail['storeName'],
+                    );
 
                     Get.snackbar(
                       'Product',

@@ -93,6 +93,7 @@ class ProductWidget extends ConsumerWidget {
                             productData['imageUrlList'],
                             productData['productDisPrice'],
                             productData['productId'],
+                            // productData['vendorId'],
                             // productData['productDescription'],
                             // productData['productQuantity'],
                             // productData['sizeList'],

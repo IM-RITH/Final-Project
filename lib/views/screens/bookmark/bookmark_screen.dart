@@ -1,6 +1,5 @@
 import 'package:easyshop/models/favorite_model.dart';
 import 'package:easyshop/provider/favorite_provider.dart';
-import 'package:easyshop/views/screens/SeeAllScreen/product_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';

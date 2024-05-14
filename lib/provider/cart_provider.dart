@@ -1,5 +1,7 @@
 import 'package:easyshop/models/cart_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 final cartProvider =
     StateNotifierProvider<CartNotifier, Map<String, CartModel>>((ref) {
@@ -7,10 +9,33 @@ final cartProvider =
 });
 
 class CartNotifier extends StateNotifier<Map<String, CartModel>> {
-  CartNotifier() : super({});
+  CartNotifier() : super({}) {
+    _loadCart();
+  }
+
   bool _hasViewedCart = false;
 
-  // add product to cart
+  Future<void> _loadCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cartData = prefs.getString('cart');
+    if (cartData != null) {
+      final Map<String, dynamic> decodedCart = jsonDecode(cartData);
+      state = decodedCart.map((key, value) => MapEntry(
+            key,
+            CartModel.fromJson(value),
+          ));
+    }
+  }
+
+  Future<void> _saveCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cartData = state.map((key, value) => MapEntry(
+          key,
+          value.toJson(),
+        ));
+    prefs.setString('cart', jsonEncode(cartData));
+  }
+
   void addProductToCart({
     required String productName,
     required double productPrice,
@@ -20,40 +45,44 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
     required String productColor,
     required double productDisPrice,
     required String productDescription,
+    // required String storeName,
     required String productId,
   }) {
     if (state.containsKey(productId)) {
       state = {
         ...state,
         productId: CartModel(
-            productName: state[productId]!.productName,
-            productPrice: state[productId]!.productPrice,
-            imageUrlList: state[productId]!.imageUrlList,
-            productQuantity: state[productId]!.productQuantity + 1,
-            productSize: state[productId]!.productSize,
-            productColor: state[productId]!.productColor,
-            // instock: state[productId]!.instock,
-            productDisPrice: state[productId]!.productDisPrice,
-            productDescription: state[productId]!.productDescription,
-            productId: state[productId]!.productId)
+          productName: state[productId]!.productName,
+          productPrice: state[productId]!.productPrice,
+          imageUrlList: state[productId]!.imageUrlList,
+          productQuantity: state[productId]!.productQuantity + 1,
+          productSize: state[productId]!.productSize,
+          productColor: state[productId]!.productColor,
+          productDisPrice: state[productId]!.productDisPrice,
+          productDescription: state[productId]!.productDescription,
+          // storeName: state[productId]!.storeName,
+          productId: state[productId]!.productId,
+        ),
       };
     } else {
       state = {
         ...state,
         productId: CartModel(
-            productName: productName,
-            productPrice: productPrice,
-            imageUrlList: imageUrlList,
-            productQuantity: productQuantity,
-            productSize: productSize,
-            productColor: productColor,
-            productDescription: productDescription,
-            // instock: instock,
-            productDisPrice: productDisPrice,
-            productId: productId)
+          productName: productName,
+          productPrice: productPrice,
+          imageUrlList: imageUrlList,
+          productQuantity: productQuantity,
+          productSize: productSize,
+          productColor: productColor,
+          productDescription: productDescription,
+          productDisPrice: productDisPrice,
+          // storeName: storeName,
+          productId: productId,
+        ),
       };
     }
     _hasViewedCart = false;
+    _saveCart();
   }
 
   void setViewedCart(bool viewed) {
@@ -62,33 +91,31 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
 
   bool get hasViewedCart => _hasViewedCart;
 
-  // remove item from cart screen
   void removeItem(String productId) {
     state.remove(productId);
-    // notify listeners
     state = {...state};
+    _saveCart();
   }
 
-  // increase item on cart screen
   void increseProductCount(String productId) {
     if (state.containsKey(productId)) {
       state[productId]!.productQuantity++;
     }
     state = {...state};
+    _saveCart();
   }
 
-  // decrease item on cart screen
   void decreseProductCount(String productId) {
     if (state.containsKey(productId)) {
       int count = state[productId]!.productQuantity;
       if (count > 1) {
         state[productId]!.productQuantity--;
-      } else {}
+      }
     }
     state = {...state};
+    _saveCart();
   }
 
-  // total price product
   double totalPrice() {
     double totalAmount = 0.0;
     state.forEach((productId, cartItem) {
@@ -97,6 +124,5 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
     return totalAmount;
   }
 
-  // get cart item
   Map<String, CartModel> get getCartItem => state;
 }

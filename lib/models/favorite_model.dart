@@ -4,10 +4,7 @@ class FavoriteModel {
   final List imageUrlList;
   final double productDisPrice;
   final String productId;
-  // final String productDescription;
-  // late int productQuantity;
-  // final String productSize;
-  // final String productColor;
+  // final String vendorId;
 
   FavoriteModel({
     required this.productName,
@@ -15,8 +12,24 @@ class FavoriteModel {
     required this.imageUrlList,
     required this.productDisPrice,
     required this.productId,
-    // required this.productDescription,
-    // required this.productSize,
-    // required this.productColor
+    // required this.vendorId,
   });
+
+  Map<String, dynamic> toJson() => {
+        'productName': productName,
+        'productPrice': productPrice,
+        'imageUrlList': imageUrlList,
+        'productDisPrice': productDisPrice,
+        'productId': productId,
+        // 'vendorId': vendorId,
+      };
+
+  factory FavoriteModel.fromJson(Map<String, dynamic> json) => FavoriteModel(
+        productName: json['productName'],
+        productPrice: json['productPrice'],
+        imageUrlList: List<String>.from(json['imageUrlList']),
+        productDisPrice: json['productDisPrice'],
+        productId: json['productId'],
+        // vendorId: json['vendorId'],
+      );
 }
