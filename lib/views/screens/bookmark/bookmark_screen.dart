@@ -1,7 +1,9 @@
 import 'package:easyshop/models/favorite_model.dart';
 import 'package:easyshop/provider/favorite_provider.dart';
+import 'package:easyshop/views/screens/SeeAllScreen/all_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -20,7 +22,7 @@ class _BookMarkScreenState extends ConsumerState<BookMarkScreen> {
 
     if (userId == null) {
       // Handle the case where userId is null, possibly show an error or redirect to login
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: Text('User not logged in'),
         ),
@@ -59,13 +61,48 @@ class _BookMarkScreenState extends ConsumerState<BookMarkScreen> {
       ),
       body: wishListItems.isEmpty
           ? Center(
-              child: Text(
-                "Your wishlist is empty",
-                style: GoogleFonts.roboto(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.bookmark_border,
+                    size: 100,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "Your wishlist is empty",
+                    style: GoogleFonts.roboto(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.to(
+                        () => const AllProductScreen(),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade700,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      "Browse Products",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             )
           : ListView.builder(

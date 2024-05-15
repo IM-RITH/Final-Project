@@ -1,4 +1,5 @@
 import 'package:easyshop/provider/cart_provider.dart';
+import 'package:easyshop/views/screens/SeeAllScreen/all_product_screen.dart';
 import 'package:easyshop/views/screens/innerscreen/checkout_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +23,13 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
     if (userId == null) {
       // Handle the case where userId is null, possibly show an error or redirect to login
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: Text('User not logged in'),
         ),
       );
     }
+
     TextStyle productNameStyle = const TextStyle(
       fontSize: 18,
       color: Colors.white,
@@ -39,15 +41,52 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       color: Colors.white,
       fontWeight: FontWeight.bold,
     );
+
     return Scaffold(
       body: cartInfo.isEmpty
           ? Center(
-              child: Text(
-                'Your cart is empty',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade600),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 100,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Your cart is empty',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.to(
+                        () => const AllProductScreen(),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade700,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Browse Products',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             )
           : Column(

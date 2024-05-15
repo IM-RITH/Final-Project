@@ -52,10 +52,10 @@ class ProductWidget extends ConsumerWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withOpacity(0.5),
-            blurRadius: 10,
+            color: Colors.transparent.withOpacity(0.5),
+            blurRadius: 2,
             spreadRadius: 2,
-            offset: const Offset(0, 4),
+            offset: const Offset(1, 1),
           ),
         ],
       ),

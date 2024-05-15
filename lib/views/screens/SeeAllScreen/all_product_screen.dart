@@ -72,11 +72,11 @@ class _AllProductScreenState extends State<AllProductScreen> {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return Center(child: Text('Something went wrong'));
+                  return const Center(child: Text('Something went wrong'));
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final products = searchQuery.isEmpty

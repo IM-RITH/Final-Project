@@ -113,7 +113,9 @@ class _StoreProductScreenState extends State<StoreProductScreen> {
                 }
                 if (snapshot.data!.docs.isEmpty) {
                   return const Padding(
-                    padding: EdgeInsets.only(top: 100),
+                    padding: EdgeInsets.only(
+                      top: 100,
+                    ),
                     child: Center(
                         child: Text(
                       'No Products Found',
@@ -123,7 +125,7 @@ class _StoreProductScreenState extends State<StoreProductScreen> {
                   );
                 }
                 return Padding(
-                  padding: const EdgeInsets.only(left: 5.0, top: 8.0),
+                  padding: const EdgeInsets.only(top: 8.0, right: 6, left: 6),
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.6,
                     child: GridView.builder(
