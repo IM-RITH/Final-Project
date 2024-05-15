@@ -337,7 +337,12 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
                           'buyerEmail': (userDocs.data()
                               as Map<String, dynamic>)['email'],
                           'buyerId': auth.currentUser!.uid,
-                          'vendorId': vendorId, // Ensure this line is included
+                          'vendorId': vendorId,
+                          'status': 'pending',
+                          'date': DateTime.now(),
+                          'productSize': item.productSize,
+                          'productColor': item.productColor,
+                          'productImage': item.imageUrlList,
                         });
                       }
                     },

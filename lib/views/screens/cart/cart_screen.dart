@@ -1,5 +1,6 @@
 import 'package:easyshop/provider/cart_provider.dart';
 import 'package:easyshop/views/screens/innerscreen/checkout_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,16 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final cartInfo = ref.watch(cartProvider);
     final _cartProvider = ref.read(cartProvider.notifier);
     final totalAmount = ref.read(cartProvider.notifier).totalPrice();
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      // Handle the case where userId is null, possibly show an error or redirect to login
+      return Scaffold(
+        body: Center(
+          child: Text('User not logged in'),
+        ),
+      );
+    }
     TextStyle productNameStyle = const TextStyle(
       fontSize: 18,
       color: Colors.white,
@@ -199,8 +210,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                                           icon: const Icon(Icons.remove_circle,
                                               color: Colors.redAccent),
                                           onPressed: () {
-                                            _cartProvider.decreseProductCount(
-                                                cartItem.productId);
+                                            _cartProvider.decreaseProductCount(
+                                                userId, cartItem.productId);
                                           },
                                         ),
                                         Text(
@@ -211,8 +222,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                                           icon: const Icon(Icons.add_circle,
                                               color: Colors.greenAccent),
                                           onPressed: () {
-                                            _cartProvider.increseProductCount(
-                                                cartItem.productId);
+                                            _cartProvider.increaseProductCount(
+                                                userId, cartItem.productId);
                                           },
                                         ),
                                       ],
@@ -223,8 +234,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                                   icon: const Icon(Icons.delete_rounded,
                                       color: Colors.white),
                                   onPressed: () {
-                                    _cartProvider
-                                        .removeItem(cartItem.productId);
+                                    _cartProvider.removeItem(
+                                        userId, cartItem.productId);
                                   },
                                 ),
                               ],

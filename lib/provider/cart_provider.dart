@@ -9,15 +9,13 @@ final cartProvider =
 });
 
 class CartNotifier extends StateNotifier<Map<String, CartModel>> {
-  CartNotifier() : super({}) {
-    _loadCart();
-  }
+  CartNotifier() : super({});
 
   bool _hasViewedCart = false;
 
-  Future<void> _loadCart() async {
+  Future<void> loadCart(String userId) async {
     final prefs = await SharedPreferences.getInstance();
-    final cartData = prefs.getString('cart');
+    final cartData = prefs.getString('cart_$userId');
     if (cartData != null) {
       final Map<String, dynamic> decodedCart = jsonDecode(cartData);
       state = decodedCart.map((key, value) => MapEntry(
@@ -27,25 +25,25 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
     }
   }
 
-  Future<void> _saveCart() async {
+  Future<void> saveCart(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     final cartData = state.map((key, value) => MapEntry(
           key,
           value.toJson(),
         ));
-    prefs.setString('cart', jsonEncode(cartData));
+    prefs.setString('cart_$userId', jsonEncode(cartData));
   }
 
   void addProductToCart({
+    required String userId,
     required String productName,
     required double productPrice,
-    required List imageUrlList,
+    required List<String> imageUrlList,
     required int productQuantity,
     required String productSize,
     required String productColor,
     required double productDisPrice,
     required String productDescription,
-    // required String storeName,
     required String productId,
   }) {
     if (state.containsKey(productId)) {
@@ -60,7 +58,6 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
           productColor: state[productId]!.productColor,
           productDisPrice: state[productId]!.productDisPrice,
           productDescription: state[productId]!.productDescription,
-          // storeName: state[productId]!.storeName,
           productId: state[productId]!.productId,
         ),
       };
@@ -76,13 +73,12 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
           productColor: productColor,
           productDescription: productDescription,
           productDisPrice: productDisPrice,
-          // storeName: storeName,
           productId: productId,
         ),
       };
     }
     _hasViewedCart = false;
-    _saveCart();
+    saveCart(userId);
   }
 
   void setViewedCart(bool viewed) {
@@ -91,21 +87,21 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
 
   bool get hasViewedCart => _hasViewedCart;
 
-  void removeItem(String productId) {
+  void removeItem(String userId, String productId) {
     state.remove(productId);
     state = {...state};
-    _saveCart();
+    saveCart(userId);
   }
 
-  void increseProductCount(String productId) {
+  void increaseProductCount(String userId, String productId) {
     if (state.containsKey(productId)) {
       state[productId]!.productQuantity++;
     }
     state = {...state};
-    _saveCart();
+    saveCart(userId);
   }
 
-  void decreseProductCount(String productId) {
+  void decreaseProductCount(String userId, String productId) {
     if (state.containsKey(productId)) {
       int count = state[productId]!.productQuantity;
       if (count > 1) {
@@ -113,7 +109,7 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
       }
     }
     state = {...state};
-    _saveCart();
+    saveCart(userId);
   }
 
   double totalPrice() {

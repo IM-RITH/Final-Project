@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final dynamic productDetail;
@@ -47,6 +48,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final _cartProvider = ref.read(cartProvider.notifier);
     final _favoriteProvider = ref.read(favoriteProvider.notifier);
     final favorites = ref.watch(favoriteProvider);
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      // Handle the case where userId is null, possibly show an error or redirect to login
+      return Scaffold(
+        body: Center(
+          child: Text('User not logged in'),
+        ),
+      );
+    }
+
     isBookmarked = favorites.containsKey(widget.productDetail['productId']);
 
     // select size product
@@ -167,18 +179,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 double productDisPrice = double.tryParse(
                         widget.productDetail['productDisPrice'].toString()) ??
                     0.0;
+                List<String> imageUrlList =
+                    List<String>.from(widget.productDetail['imageUrlList']);
 
                 _favoriteProvider.addToFavorite(
+                  userId,
                   widget.productDetail['productName'],
                   productPrice,
-                  widget.productDetail['imageUrlList'],
+                  imageUrlList,
                   productDisPrice,
                   widget.productDetail['productId'],
-                  // widget.productDetail['vendorId'],
-                  // widget.productDetail['productDescription'],
-                  // widget.productDetail['productQuantity'],
-                  // widget.productDetail['sizeList'],
-                  // widget.productDetail['colorList'],
                 );
                 Get.snackbar(
                   'Favorites',
@@ -191,8 +201,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   duration: const Duration(seconds: 2),
                 );
               } else {
-                _favoriteProvider
-                    .removeFavorite(widget.productDetail['productId']);
+                _favoriteProvider.removeFavorite(
+                    userId, widget.productDetail['productId']);
                 Get.snackbar(
                   'Favorites',
                   'Removed from Favorites',
@@ -481,7 +491,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ],
               ),
             ),
-            // description
+            // descrip header
             Padding(
               padding: const EdgeInsets.only(left: 10, top: 10),
               child: Row(
@@ -501,6 +511,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ],
               ),
             ),
+            // description text
             Padding(
               padding: const EdgeInsets.only(left: 10, right: 10),
               child: Text(
@@ -688,9 +699,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     }
 
                     _cartProvider.addProductToCart(
+                      userId: userId,
                       productName: widget.productDetail['productName'],
                       productPrice: widget.productDetail['productPrice'],
-                      imageUrlList: widget.productDetail['imageUrlList'],
+                      imageUrlList: List<String>.from(
+                          widget.productDetail['imageUrlList']),
                       productQuantity: 1,
                       productSize: selectSize,
                       productColor: selectColor,
@@ -698,7 +711,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       productDescription:
                           widget.productDetail['productDescription'],
                       productId: widget.productDetail['productId'],
-                      // storeName: widget.productDetail['storeName'],
                     );
 
                     Get.snackbar(

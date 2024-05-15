@@ -3,6 +3,7 @@ import 'package:easyshop/provider/favorite_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class BookMarkScreen extends ConsumerStatefulWidget {
   const BookMarkScreen({super.key});
@@ -15,6 +16,17 @@ class _BookMarkScreenState extends ConsumerState<BookMarkScreen> {
   @override
   Widget build(BuildContext context) {
     final _favoriteProvider = ref.read(favoriteProvider.notifier);
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      // Handle the case where userId is null, possibly show an error or redirect to login
+      return Scaffold(
+        body: Center(
+          child: Text('User not logged in'),
+        ),
+      );
+    }
+
     final Map<String, FavoriteModel> wishListItems =
         ref.watch(favoriteProvider);
 
@@ -33,7 +45,7 @@ class _BookMarkScreenState extends ConsumerState<BookMarkScreen> {
             ),
             IconButton(
               onPressed: () {
-                _favoriteProvider.clearAllFromScreen();
+                _favoriteProvider.clearAllFromScreen(userId);
               },
               icon: const Icon(
                 Icons.delete,
@@ -60,15 +72,12 @@ class _BookMarkScreenState extends ConsumerState<BookMarkScreen> {
               itemCount: wishListItems.length,
               itemBuilder: (context, index) {
                 final wishListData = wishListItems.values.toList()[index];
-                final FavoriteModel favorite =
-                    wishListItems.values.elementAt(index);
                 return Dismissible(
                   key: Key(wishListData.productId),
                   direction: DismissDirection.endToStart,
                   onDismissed: (_) {
-                    ref
-                        .read(favoriteProvider.notifier)
-                        .removeFavorite(wishListData.productId);
+                    _favoriteProvider.removeFavorite(
+                        userId, wishListData.productId);
                   },
                   background: Container(
                     color: Colors.red,
@@ -142,20 +151,14 @@ class _BookMarkScreenState extends ConsumerState<BookMarkScreen> {
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.white),
                           onPressed: () {
-                            ref
-                                .read(favoriteProvider.notifier)
-                                .removeFavorite(wishListData.productId);
+                            _favoriteProvider.removeFavorite(
+                                userId, wishListData.productId);
                           },
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         onTap: () {
-                          // Navigator.push(context,
-                          //     MaterialPageRoute(builder: (context) {
-                          //   return ProductDetailScreen(
-                          //     productDetail: favorite,
-                          //   );
-                          // }));
+                          // Handle the onTap event, e.g., navigate to product details
                         },
                       ),
                     ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProductWidget extends ConsumerWidget {
   final dynamic productData;
@@ -14,6 +15,14 @@ class ProductWidget extends ConsumerWidget {
     // Check if the product is favorited
     final isFavorited =
         ref.watch(favoriteProvider).containsKey(productData['productId']);
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      // Handle the case where userId is null, possibly show an error or redirect to login
+      return const Center(
+        child: Text('User not logged in'),
+      );
+    }
 
     TextStyle productName = GoogleFonts.roboto(
         fontSize: 15,
@@ -85,19 +94,19 @@ class ProductWidget extends ConsumerWidget {
                     if (isFavorited) {
                       ref
                           .read(favoriteProvider.notifier)
-                          .removeFavorite(productData['productId']);
+                          .removeFavorite(userId, productData['productId']);
                     } else {
                       ref.read(favoriteProvider.notifier).addToFavorite(
+                            userId,
                             productData['productName'],
-                            productData['productPrice'],
-                            productData['imageUrlList'],
-                            productData['productDisPrice'],
+                            double.tryParse(
+                                    productData['productPrice'].toString()) ??
+                                0.0,
+                            List<String>.from(productData['imageUrlList']),
+                            double.tryParse(productData['productDisPrice']
+                                    .toString()) ??
+                                0.0,
                             productData['productId'],
-                            // productData['vendorId'],
-                            // productData['productDescription'],
-                            // productData['productQuantity'],
-                            // productData['sizeList'],
-                            // productData['colorList']
                           );
                       Get.snackbar(
                         'Favorites',

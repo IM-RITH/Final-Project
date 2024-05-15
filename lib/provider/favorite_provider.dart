@@ -9,15 +9,13 @@ final favoriteProvider =
 });
 
 class FavoriteNotifier extends StateNotifier<Map<String, FavoriteModel>> {
-  FavoriteNotifier() : super({}) {
-    _loadFavorites();
-  }
+  FavoriteNotifier() : super({});
 
   bool _hasViewedFavorite = false;
 
-  Future<void> _loadFavorites() async {
+  Future<void> loadFavorites(String userId) async {
     final prefs = await SharedPreferences.getInstance();
-    final favoriteData = prefs.getString('favorites');
+    final favoriteData = prefs.getString('favorites_$userId');
     if (favoriteData != null) {
       final Map<String, dynamic> decodedFavorites = jsonDecode(favoriteData);
       state = decodedFavorites.map((key, value) => MapEntry(
@@ -27,22 +25,22 @@ class FavoriteNotifier extends StateNotifier<Map<String, FavoriteModel>> {
     }
   }
 
-  Future<void> _saveFavorites() async {
+  Future<void> saveFavorites(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     final favoriteData = state.map((key, value) => MapEntry(
           key,
           value.toJson(),
         ));
-    prefs.setString('favorites', jsonEncode(favoriteData));
+    prefs.setString('favorites_$userId', jsonEncode(favoriteData));
   }
 
   void addToFavorite(
+    String userId,
     String productName,
     double productPrice,
-    List imageUrlList,
+    List<String> imageUrlList,
     double productDisPrice,
     String productId,
-    // String vendorId,
   ) {
     state[productId] = FavoriteModel(
       productName: productName,
@@ -50,11 +48,10 @@ class FavoriteNotifier extends StateNotifier<Map<String, FavoriteModel>> {
       imageUrlList: imageUrlList,
       productDisPrice: productDisPrice,
       productId: productId,
-      // vendorId: vendorId,
     );
     state = {...state};
     _hasViewedFavorite = false;
-    _saveFavorites();
+    saveFavorites(userId);
   }
 
   void setViewedFavorite(bool viewed) {
@@ -63,16 +60,16 @@ class FavoriteNotifier extends StateNotifier<Map<String, FavoriteModel>> {
 
   bool get hasViewedFavorite => _hasViewedFavorite;
 
-  void removeFavorite(String productId) {
+  void removeFavorite(String userId, String productId) {
     state.remove(productId);
     state = {...state};
-    _saveFavorites();
+    saveFavorites(userId);
   }
 
-  void clearAllFromScreen() {
+  void clearAllFromScreen(String userId) {
     state.clear();
     state = {...state};
-    _saveFavorites();
+    saveFavorites(userId);
   }
 
   Map<String, FavoriteModel> get getFavoriteItem => state;

@@ -112,7 +112,15 @@ class _StoreProductScreenState extends State<StoreProductScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No Products Found'));
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 100),
+                    child: Center(
+                        child: Text(
+                      'No Products Found',
+                      style: TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    )),
+                  );
                 }
                 return Padding(
                   padding: const EdgeInsets.only(left: 5.0, top: 8.0),

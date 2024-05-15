@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:easyshop/controller/category_controller.dart';
 import 'package:easyshop/controller/store_controller.dart';
+import 'package:easyshop/usage/usage.dart';
 import 'package:easyshop/views/onboardingscreen.dart';
 import 'package:easyshop/views/screens/map/map_screen.dart';
 import 'package:flutter/material.dart';
@@ -37,14 +38,14 @@ void main() async {
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -63,6 +64,8 @@ class _MyAppState extends State<MyApp> {
         Get.offAll(
           () => const MapScreen(),
         );
+        loadUserCart(ref);
+        loadUserFavorites(ref);
       }
     });
   }

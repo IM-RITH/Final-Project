@@ -1,13 +1,12 @@
 class CartModel {
   final String productName;
   final double productPrice;
-  final List imageUrlList;
+  final List<String> imageUrlList;
   int productQuantity;
   final String productSize;
   final String productColor;
   final double productDisPrice;
   final String productDescription;
-  // final String storeName;
   final String productId;
 
   CartModel({
@@ -19,7 +18,6 @@ class CartModel {
     required this.productColor,
     required this.productDisPrice,
     required this.productDescription,
-    // required this.storeName,
     required this.productId,
   });
 
@@ -32,7 +30,6 @@ class CartModel {
         'productColor': productColor,
         'productDisPrice': productDisPrice,
         'productDescription': productDescription,
-        // 'storeName': storeName,
         'productId': productId,
       };
 
@@ -45,7 +42,6 @@ class CartModel {
         productColor: json['productColor'],
         productDisPrice: json['productDisPrice'],
         productDescription: json['productDescription'],
-        // storeName: json['storeName'],
         productId: json['productId'],
       );
 }
