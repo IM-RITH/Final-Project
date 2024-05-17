@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyshop/controller/auth_controller.dart';
 import 'package:easyshop/views/screens/auth/login_screen.dart';
+import 'package:easyshop/views/screens/profile/my_order.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -108,11 +109,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.white,
                     backgroundColor: Color(0xFF153167),
                   ),
-                  const ProfileMenuItem(
+                  ProfileMenuItem(
                     icon: Icons.shopping_cart,
-                    text: 'Cart',
+                    text: 'My Order',
                     color: Colors.white,
-                    backgroundColor: Color(0xFF153167),
+                    backgroundColor: const Color(0xFF153167),
+                    onTap: () {
+                      Get.to(
+                        () => const MyOrderScreen(),
+                      );
+                    },
                   ),
                   const ProfileMenuItem(
                     icon: Icons.history,
