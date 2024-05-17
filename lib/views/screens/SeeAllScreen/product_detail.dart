@@ -52,7 +52,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
     if (userId == null) {
       // Handle the case where userId is null, possibly show an error or redirect to login
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: Text('User not logged in'),
         ),
@@ -711,6 +711,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       productDescription:
                           widget.productDetail['productDescription'],
                       productId: widget.productDetail['productId'],
+                      shippingFees: widget.productDetail['shippingFees'],
                     );
 
                     Get.snackbar(

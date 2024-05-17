@@ -45,6 +45,7 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
     required double productDisPrice,
     required String productDescription,
     required String productId,
+    required double shippingFees,
   }) {
     if (state.containsKey(productId)) {
       state = {
@@ -59,6 +60,7 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
           productDisPrice: state[productId]!.productDisPrice,
           productDescription: state[productId]!.productDescription,
           productId: state[productId]!.productId,
+          shippingFees: state[productId]!.shippingFees,
         ),
       };
     } else {
@@ -74,6 +76,7 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
           productDescription: productDescription,
           productDisPrice: productDisPrice,
           productId: productId,
+          shippingFees: shippingFees,
         ),
       };
     }
@@ -116,6 +119,15 @@ class CartNotifier extends StateNotifier<Map<String, CartModel>> {
     double totalAmount = 0.0;
     state.forEach((productId, cartItem) {
       totalAmount += cartItem.productQuantity * cartItem.productDisPrice;
+    });
+    return totalAmount;
+  }
+
+  double totalPriceWithShipping() {
+    double totalAmount = 0.0;
+    state.forEach((productId, cartItem) {
+      totalAmount += cartItem.productQuantity * cartItem.productDisPrice 
+      +cartItem.shippingFees;
     });
     return totalAmount;
   }

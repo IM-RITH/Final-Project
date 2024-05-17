@@ -14,22 +14,22 @@ class AllProductScreen extends StatefulWidget {
 class _AllProductScreenState extends State<AllProductScreen> {
   final Stream<QuerySnapshot> _allProductStream =
       FirebaseFirestore.instance.collection('products').snapshots();
-  TextEditingController _searchController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
   String searchQuery = "";
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
+    searchController.addListener(() {
       setState(() {
-        searchQuery = _searchController.text.toLowerCase();
+        searchQuery = searchController.text.toLowerCase();
       });
     });
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -53,7 +53,7 @@ class _AllProductScreenState extends State<AllProductScreen> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: TextField(
-              controller: _searchController,
+              controller: searchController,
               decoration: InputDecoration(
                 hintText: "Search products...",
                 filled: true,

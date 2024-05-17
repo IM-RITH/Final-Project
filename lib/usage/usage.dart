@@ -20,6 +20,7 @@ void someFunction(WidgetRef ref) {
       productDisPrice: 80.0,
       productDescription: 'Example Description',
       productId: '12345',
+      shippingFees: 0.0,
     );
   }
 }

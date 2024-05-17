@@ -8,6 +8,7 @@ class CartModel {
   final double productDisPrice;
   final String productDescription;
   final String productId;
+  final double shippingFees;
 
   CartModel({
     required this.productName,
@@ -19,6 +20,7 @@ class CartModel {
     required this.productDisPrice,
     required this.productDescription,
     required this.productId,
+    required this.shippingFees,
   });
 
   Map<String, dynamic> toJson() => {
@@ -31,6 +33,7 @@ class CartModel {
         'productDisPrice': productDisPrice,
         'productDescription': productDescription,
         'productId': productId,
+        'shippingFees': shippingFees,
       };
 
   factory CartModel.fromJson(Map<String, dynamic> json) => CartModel(
@@ -43,5 +46,6 @@ class CartModel {
         productDisPrice: json['productDisPrice'],
         productDescription: json['productDescription'],
         productId: json['productId'],
+        shippingFees: (json['shippingFees'] ?? 0.0).toDouble(),
       );
 }

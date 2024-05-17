@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easyshop/const/stripe_api.dart';
 import 'package:easyshop/controller/category_controller.dart';
 import 'package:easyshop/controller/store_controller.dart';
 import 'package:easyshop/usage/usage.dart';
@@ -10,9 +11,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = StripeApi.stripePublicKey;
+  // await Stripe.instance.applySettings();
   Platform.isAndroid
       ? await Firebase.initializeApp(
           options: const FirebaseOptions(
