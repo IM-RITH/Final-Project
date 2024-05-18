@@ -134,7 +134,14 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
         'phone': _phoneController.text,
         'paymentMethod': _selectedPaymentMethod,
         'delivered': false,
-        'processing': true,
+        'processing': [
+          'Order placed',
+          'Vendor accepted your order',
+          'Your product is being prepared for delivery',
+          'Your product is out for delivery',
+          'Your product is near your location',
+          'Your product has been delivered',
+        ],
       });
     }
   }

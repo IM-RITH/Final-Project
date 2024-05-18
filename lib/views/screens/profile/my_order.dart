@@ -14,6 +14,17 @@ class MyOrderScreen extends StatefulWidget {
 class _MyOrderScreenState extends State<MyOrderScreen> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
+  void _updateProcessingStep(DocumentSnapshot document, int stepIndex) async {
+    List<dynamic> processingSteps = document['processing'] ?? [];
+    if (stepIndex < processingSteps.length) {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(document.id)
+          .update({'processingStep': stepIndex});
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> _ordersStream = FirebaseFirestore.instance
@@ -57,9 +68,17 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
               Map<String, dynamic> data =
                   document.data()! as Map<String, dynamic>;
 
-              bool isProcessing = data['processing'] ?? false;
+              List<dynamic> processingSteps = [];
+              if (data['processing'] is List) {
+                processingSteps = data['processing'] ?? [];
+              }
+              int currentStep = data['processingStep'] ?? 0;
+
               bool isDelivered = data['delivered'] ?? false;
-              String imageUrl = data['productImage'][0] ?? '';
+              String imageUrl = (data['productImage'] is List &&
+                      data['productImage'].isNotEmpty)
+                  ? data['productImage'][0]
+                  : '';
 
               // Convert Timestamp to DateTime and format it as a string
               Timestamp timestamp = data['date'] ?? Timestamp.now();
@@ -174,23 +193,52 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Row(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Processing: ',
+                                  'Processing:',
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                Icon(
-                                  isProcessing
-                                      ? Icons.check_circle
-                                      : Icons.cancel,
-                                  color:
-                                      isProcessing ? Colors.green : Colors.red,
-                                ),
-                                const SizedBox(width: 16),
+                                if (processingSteps.isNotEmpty &&
+                                    currentStep < processingSteps.length)
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        processingSteps[currentStep],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                if (currentStep + 1 < processingSteps.length)
+                                  TextButton(
+                                    onPressed: () => _updateProcessingStep(
+                                        document, currentStep + 1),
+                                    child: Text(
+                                      'Mark as ${processingSteps[currentStep + 1]}',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
                                 Text(
                                   'Delivered: ',
                                   style: GoogleFonts.poppins(
