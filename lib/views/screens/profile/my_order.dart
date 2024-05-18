@@ -14,17 +14,6 @@ class MyOrderScreen extends StatefulWidget {
 class _MyOrderScreenState extends State<MyOrderScreen> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  void _updateProcessingStep(DocumentSnapshot document, int stepIndex) async {
-    List<dynamic> processingSteps = document['processing'] ?? [];
-    if (stepIndex < processingSteps.length) {
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(document.id)
-          .update({'processingStep': stepIndex});
-      setState(() {});
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> _ordersStream = FirebaseFirestore.instance
@@ -125,21 +114,31 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                               ),
                             ),
                             const SizedBox(height: 8),
+                            Text(
+                              'Quantity: ${data['quantity']}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Total Price: \$${data['totalPrice']}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
                             Row(
                               children: [
-                                Text(
-                                  'Quantity: ${data['quantity']}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Text(
-                                  'Total Price: \$${data['totalPrice']}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                                Expanded(
+                                  child: Text(
+                                    'Payment Method: ${data['paymentMethod']}',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -147,23 +146,13 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                Text(
-                                  'Payment Method: ${data['paymentMethod']}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Text(
-                                  'Order Date: $orderDate',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                                Expanded(
+                                  child: Text(
+                                    'Order Date: $orderDate',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -203,6 +192,9 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
+                                const SizedBox(
+                                  height: 6.0,
+                                ),
                                 if (processingSteps.isNotEmpty &&
                                     currentStep < processingSteps.length)
                                   Row(
@@ -213,26 +205,16 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                         size: 16,
                                       ),
                                       const SizedBox(width: 8),
-                                      Text(
-                                        processingSteps[currentStep],
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
+                                      Expanded(
+                                        child: Text(
+                                          processingSteps[currentStep],
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                     ],
-                                  ),
-                                if (currentStep + 1 < processingSteps.length)
-                                  TextButton(
-                                    onPressed: () => _updateProcessingStep(
-                                        document, currentStep + 1),
-                                    child: Text(
-                                      'Mark as ${processingSteps[currentStep + 1]}',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
                                   ),
                               ],
                             ),
