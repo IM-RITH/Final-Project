@@ -3,7 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String vendorId;
+  final String buyerId;
+  final String productId;
+  final String productName;
+
+  const ChatScreen(
+      {super.key,
+      required this.vendorId,
+      required this.buyerId,
+      required this.productId,
+      required this.productName});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();

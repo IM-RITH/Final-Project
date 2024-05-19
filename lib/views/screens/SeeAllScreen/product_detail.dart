@@ -740,8 +740,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   icon: const Icon(Icons.message),
                   label: Text("Chat with Store", style: addAndChatTextStyle),
                   onPressed: () {
-                    // Handle chat with store action
-                    print("Chat with store");
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return ChatScreen(
+                          vendorId: widget.productDetail['vendorId'],
+                          buyerId: FirebaseAuth.instance.currentUser!.uid,
+                          productId: widget.productDetail['productId'],
+                          productName: widget.productDetail['productName'],
+                        );
+                      },
+                    ));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF8A9418),

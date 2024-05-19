@@ -1,22 +1,18 @@
+import 'package:easyshop/provider/provider_home.dart';
 import 'package:easyshop/views/screens/chat/chat_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import "package:google_fonts/google_fonts.dart";
 
-class SearchWidget extends StatelessWidget {
+class SearchWidget extends ConsumerWidget {
   const SearchWidget({super.key});
 
-  // void _navigateToStoreScreen(BuildContext context) {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //         builder: (context) =>
-  //             StoreScreen()), // Replace with your StoreScreen class
-  //   );
-  // }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final buyerId = ref.watch(buyerIdProvider);
+    final productIdsAsyncValue = ref.watch(productIdsProvider);
+
     final BoxDecoration searchBoxDecoration = BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(10.0),
@@ -66,8 +62,47 @@ class SearchWidget extends StatelessWidget {
           const SizedBox(width: 10),
           GestureDetector(
             onTap: () {
-              Get.to(
-                () => const ChatScreen(),
+              productIdsAsyncValue.when(
+                data: (productIds) {
+                  if (productIds.isNotEmpty) {
+                    final productId = productIds
+                        .first;
+                    final vendorIdAsyncValue =
+                        ref.watch(vendorIdProvider(productId));
+                    final productNameAsyncValue =
+                        ref.watch(productProvider(productId));
+
+                    vendorIdAsyncValue.when(
+                      data: (vendorId) {
+                        productNameAsyncValue.when(
+                          data: (product) {
+                            Get.to(
+                              () => ChatScreen(
+                                vendorId: vendorId,
+                                buyerId: buyerId,
+                                productId: productId,
+                                productName: product['storeName'],
+                              ),
+                            );
+                          },
+                          loading: () => print(
+                              'Loading product name'), 
+                          error: (e, _) =>
+                              print('Error loading product name: $e'),
+                        );
+                      },
+                      loading: () => print(
+                          'Loading vendor ID'), 
+                      error: (e, _) => print('Error loading vendor ID: $e'),
+                    );
+                  } else {
+                    print(
+                        'No products found'); 
+                  }
+                },
+                loading: () => print(
+                    'Loading product IDs'), 
+                error: (e, _) => print('Error loading product IDs: $e'),
               );
             },
             child: Container(

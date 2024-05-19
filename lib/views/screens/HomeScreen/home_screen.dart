@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easyshop/views/screens/widget/banner_widget.dart';
 import 'package:easyshop/views/screens/widget/category_widget.dart';
 import 'package:easyshop/views/screens/widget/logo_widget.dart';
@@ -5,29 +7,23 @@ import 'package:easyshop/views/screens/widget/recommend_product.dart';
 import 'package:easyshop/views/screens/widget/store_widget.dart';
 import 'package:easyshop/views/screens/widget/text_widget.dart';
 import 'package:easyshop/views/screens/widget/search_widget.dart';
-import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
       body: Column(
         children: [
           // Fixed part
-          LogoWidget(),
-          SizedBox(height: 10.0),
-          SearchWidget(),
-          SizedBox(height: 12.0),
+          const LogoWidget(),
+          const SizedBox(height: 10.0),
+          const SearchWidget(),
+          const SizedBox(height: 12.0),
 
           // Scrollable part
-          Expanded(
+          const Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
