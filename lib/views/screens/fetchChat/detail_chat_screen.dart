@@ -4,25 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatDetailScreen extends StatefulWidget {
   final String vendorId;
   final String buyerId;
   final String productId;
-  final String productName;
+  final dynamic data;
 
-  const ChatScreen({
+  const ChatDetailScreen({
     super.key,
     required this.vendorId,
     required this.buyerId,
     required this.productId,
-    required this.productName,
+    required this.data,
   });
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final FirebaseFirestore db = FirebaseFirestore.instance;
   final TextEditingController _messageController = TextEditingController();
   late Stream<QuerySnapshot> _chatStream;
@@ -53,7 +53,6 @@ class _ChatScreenState extends State<ChatScreen> {
           'vendorId': widget.vendorId,
           'buyerId': widget.buyerId,
           'productId': widget.productId,
-          'productName': widget.productName,
           'customerName':
               (customerDoc.data() as Map<String, dynamic>)['username'] ??
                   'Unknown',
@@ -89,7 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundColor: const Color(0xFF153167),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
-          'Chat > ${widget.productName}',
+          'Message',
           style: GoogleFonts.roboto(
             fontSize: 16,
             color: Colors.white,
@@ -99,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusScope.of(context).unfocus();
         },
         child: Column(
@@ -118,15 +117,15 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     );
                   }
-        
+
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-        
+
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(child: Text('No messages yet.'));
                   }
-        
+
                   return ListView(
                     children:
                         snapshot.data!.docs.map((DocumentSnapshot document) {
@@ -139,7 +138,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       String formattedTime =
                           DateFormat('hh:mm a').format(chatTime);
                       String customerImage = data['storeImage'] ?? '';
-        
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 5.0),
@@ -230,7 +229,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Row(
                 children: [
                   Expanded(

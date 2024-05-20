@@ -14,10 +14,10 @@ class _ProductWidgetState extends State<TextWidget> {
   @override
   Widget build(BuildContext context) {
     TextStyle headerStyle =
-        GoogleFonts.roboto(fontSize: 19, fontWeight: FontWeight.bold);
-    TextStyle seeAllStyle = GoogleFonts.roboto(
+        GoogleFonts.poppins(fontSize: 19, fontWeight: FontWeight.bold);
+    TextStyle seeAllStyle = GoogleFonts.poppins(
       fontSize: 19,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w600,
       color: const Color(0xFF4F7ED9),
     );
     return Column(

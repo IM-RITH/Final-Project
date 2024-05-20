@@ -1,8 +1,8 @@
-import 'package:easyshop/views/screens/fetchChat/fetch_chat.dart';
+import 'package:easyshop/views/screens/SeeAllScreen/all_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:easyshop/views/screens/chat/chat_screen.dart';
+import 'package:easyshop/views/screens/fetchChat/fetch_chat.dart';
 
 class SearchWidget extends StatelessWidget {
   const SearchWidget({Key? key}) : super(key: key);
@@ -31,27 +31,29 @@ class SearchWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Container(
-              height: 45,
-              decoration: searchBoxDecoration,
-              child: Stack(
-                alignment: Alignment.centerLeft,
-                children: [
-                  TextField(
-                    textAlign: TextAlign.left,
-                    decoration: InputDecoration(
-                      hintText: 'Search product ...',
-                      hintStyle: hintStyle,
-                      border: InputBorder.none,
-                      contentPadding:
-                          const EdgeInsets.only(left: 50.0, bottom: 5.0),
+            child: GestureDetector(
+              onTap: () {
+                Get.to(() => const AllProductScreen());
+              },
+              child: Container(
+                height: 45,
+                decoration: searchBoxDecoration,
+                child: Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 50.0, bottom: 3.0),
+                      child: Text(
+                        'Search product ...',
+                        style: hintStyle,
+                      ),
                     ),
-                  ),
-                  const Positioned(
-                    left: 20,
-                    child: Icon(Icons.search, color: Colors.blue),
-                  ),
-                ],
+                    const Positioned(
+                      left: 20,
+                      child: Icon(Icons.search, color: Colors.blue),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

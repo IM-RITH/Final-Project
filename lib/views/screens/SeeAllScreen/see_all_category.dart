@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyshop/views/screens/innerscreen/category_product.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SeeAllCategoryScreen extends StatefulWidget {
   const SeeAllCategoryScreen({super.key});
@@ -15,11 +16,16 @@ class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    TextStyle appbar = GoogleFonts.poppins(
+      fontSize: 18,
+      color: Colors.white,
+      fontWeight: FontWeight.w600,
+    );
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Categories',
-          style: TextStyle(color: Colors.white),
+          style: appbar,
         ),
         backgroundColor: const Color(0xFF153167),
         iconTheme: const IconThemeData(color: Colors.white),

@@ -15,7 +15,13 @@ class _AllProductScreenState extends State<AllProductScreen> {
   final Stream<QuerySnapshot> _allProductStream =
       FirebaseFirestore.instance.collection('products').snapshots();
   TextEditingController searchController = TextEditingController();
+  TextEditingController minPriceController = TextEditingController();
+  TextEditingController maxPriceController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
   String searchQuery = "";
+  double? minPrice;
+  double? maxPrice;
+  String location = "";
 
   @override
   void initState() {
@@ -30,7 +36,152 @@ class _AllProductScreenState extends State<AllProductScreen> {
   @override
   void dispose() {
     searchController.dispose();
+    minPriceController.dispose();
+    maxPriceController.dispose();
+    locationController.dispose();
     super.dispose();
+  }
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Text(
+            'Filter Products',
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF153167),
+              ),
+            ),
+          ),
+          content: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0C2D57), Color(0xFF0C2D57)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: minPriceController,
+                    decoration: InputDecoration(
+                      labelText: 'Min Price',
+                      labelStyle: const TextStyle(color: Colors.white),
+                      prefixIcon:
+                          const Icon(Icons.attach_money, color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.2),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: maxPriceController,
+                    decoration: InputDecoration(
+                      labelText: 'Max Price',
+                      labelStyle: const TextStyle(color: Colors.white),
+                      prefixIcon:
+                          const Icon(Icons.attach_money, color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.2),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: locationController,
+                    decoration: InputDecoration(
+                      labelText: 'Location',
+                      labelStyle: const TextStyle(color: Colors.white),
+                      prefixIcon:
+                          const Icon(Icons.location_on, color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.2),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+              child: Text(
+                'Close',
+                style: GoogleFonts.poppins(
+                    color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  minPrice = minPriceController.text.isEmpty
+                      ? null
+                      : double.tryParse(minPriceController.text);
+                  maxPrice = maxPriceController.text.isEmpty
+                      ? null
+                      : double.tryParse(maxPriceController.text);
+                  location = locationController.text.toLowerCase();
+                });
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF153167),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+              child: Text(
+                'Apply',
+                style: GoogleFonts.poppins(
+                    color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -41,11 +192,17 @@ class _AllProductScreenState extends State<AllProductScreen> {
           'All Products',
           style: GoogleFonts.poppins(
             textStyle: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+                fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
           ),
         ),
         backgroundColor: const Color(0xFF153167),
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterDialog,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -79,15 +236,26 @@ class _AllProductScreenState extends State<AllProductScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final products = searchQuery.isEmpty
-                    ? snapshot.data!.docs
-                    : snapshot.data!.docs.where((doc) {
-                        Map<String, dynamic> data =
-                            doc.data()! as Map<String, dynamic>;
-                        String name =
-                            data['productName'].toString().toLowerCase();
-                        return name.contains(searchQuery);
-                      }).toList();
+                final products = snapshot.data!.docs.where((doc) {
+                  Map<String, dynamic> data =
+                      doc.data()! as Map<String, dynamic>;
+                  String name = data['productName'].toString().toLowerCase();
+                  double price = data['productPrice']?.toDouble() ?? 0.0;
+                  String productLocation =
+                      data['city']?.toString().toLowerCase() ?? "";
+
+                  bool matchesSearchQuery =
+                      searchQuery.isEmpty || name.contains(searchQuery);
+                  bool matchesMinPrice = minPrice == null || price >= minPrice!;
+                  bool matchesMaxPrice = maxPrice == null || price <= maxPrice!;
+                  bool matchesLocation =
+                      location.isEmpty || productLocation.contains(location);
+
+                  return matchesSearchQuery &&
+                      matchesMinPrice &&
+                      matchesMaxPrice &&
+                      matchesLocation;
+                }).toList();
 
                 if (products.isEmpty) {
                   return const Center(
