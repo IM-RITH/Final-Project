@@ -92,7 +92,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                                 imageUrl,
                                 width: 70,
                                 height: 70,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               ),
                             )
                           : Container(
