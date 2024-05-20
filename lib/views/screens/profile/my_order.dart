@@ -19,6 +19,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
     final Stream<QuerySnapshot> _ordersStream = FirebaseFirestore.instance
         .collection('orders')
         .where('buyerId', isEqualTo: auth.currentUser!.uid)
+        .orderBy('date', descending: true)
         .snapshots();
     TextStyle appbarText = GoogleFonts.poppins(
       fontSize: 18,
