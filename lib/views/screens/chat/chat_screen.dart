@@ -134,7 +134,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         (data['chatTimeStamp'] as Timestamp).toDate();
                     String formattedTime =
                         DateFormat('hh:mm a').format(chatTime);
-                    String customerImage = data['customerImage'] ?? '';
+                    String customerImage = data['storeImage'] ?? '';
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
@@ -184,14 +184,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                      data['customerName'] ?? 'Unknown',
-                                      style: GoogleFonts.roboto(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
+                                    // Text(
+                                    //   data['customerName'] ?? 'Unknown',
+                                    //   style: GoogleFonts.roboto(
+                                    //     fontSize: 12,
+                                    //     color: Colors.grey[600],
+                                    //     fontWeight: FontWeight.w500,
+                                    //   ),
+                                    // ),
                                     const SizedBox(width: 5),
                                     Text(
                                       formattedTime,
