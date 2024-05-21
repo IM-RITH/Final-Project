@@ -156,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               Center(
                 child: CircleAvatar(
-                  radius: 50,
+                  radius: 70,
                   backgroundImage: _image != null
                       ? FileImage(_image!)
                       : NetworkImage(_profileImageController.text)
