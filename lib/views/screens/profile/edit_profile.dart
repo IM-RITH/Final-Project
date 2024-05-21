@@ -165,7 +165,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     alignment: Alignment.bottomRight,
                     child: IconButton(
                       icon: const Icon(FontAwesomeIcons.camera,
-                          color: Colors.white),
+                          color: Colors.blueGrey),
                       onPressed: _pickImage,
                     ),
                   ),
