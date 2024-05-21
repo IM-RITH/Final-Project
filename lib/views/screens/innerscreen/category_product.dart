@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyshop/views/screens/SeeAllScreen/product_detail.dart';
 import 'package:easyshop/views/screens/widget/product_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CategoryProductScreen extends StatefulWidget {
   final dynamic categoryData;
@@ -13,7 +14,9 @@ class CategoryProductScreen extends StatefulWidget {
 }
 
 class _CategoryProductScreenState extends State<CategoryProductScreen> {
-  // category detail (click from category see all)
+  String searchQuery = "";
+  bool isSearching = false;
+
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> productStream = FirebaseFirestore.instance
@@ -23,12 +26,44 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.categoryData["categoryName"],
-          style: const TextStyle(color: Colors.white),
-        ),
+        title: !isSearching
+            ? Text(
+                widget.categoryData["categoryName"],
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            : TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value.toLowerCase();
+                  });
+                },
+                decoration: const InputDecoration(
+                  hintText: 'Search Products',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: InputBorder.none,
+                ),
+                style: const TextStyle(color: Colors.white),
+                autofocus: true,
+              ),
         backgroundColor: const Color(0xFF153167),
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: Icon(isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                isSearching = !isSearching;
+                if (!isSearching) {
+                  searchQuery = "";
+                }
+              });
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: productStream,
@@ -47,6 +82,16 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
             return const Center(child: Text('No products found'));
           }
 
+          final filteredDocs = snapshot.data!.docs.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final productName = data['productName'] as String;
+            return productName.toLowerCase().contains(searchQuery);
+          }).toList();
+
+          if (filteredDocs.isEmpty) {
+            return const Center(child: Text('No products found'));
+          }
+
           return GridView.builder(
             padding: const EdgeInsets.all(5),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -55,10 +100,10 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
               mainAxisSpacing: 10,
               childAspectRatio: 0.95,
             ),
-            itemCount: snapshot.data!.docs.length,
+            itemCount: filteredDocs.length,
             itemBuilder: (context, index) {
               Map<String, dynamic> data =
-                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                  filteredDocs[index].data() as Map<String, dynamic>;
 
               return InkWell(
                 onTap: () {

@@ -37,12 +37,12 @@ class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
                     searchQuery = value.toLowerCase();
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search Categories',
                   hintStyle: TextStyle(color: Colors.white),
                   border: InputBorder.none,
                 ),
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 autofocus: true,
               ),
         backgroundColor: const Color(0xFF153167),
@@ -71,8 +71,7 @@ class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
         ),
         child: Column(
           children: [
-            if (!isSearching)
-              SizedBox(height: 10), // Add space if not searching
+            if (!isSearching) const SizedBox(height: 10),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: _categoryStream,
@@ -109,7 +108,7 @@ class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.all(6.0),
+                    padding: const EdgeInsets.all(0.0),
                     itemCount: filteredDocs.length,
                     itemBuilder: (context, index) {
                       DocumentSnapshot document = filteredDocs[index];
