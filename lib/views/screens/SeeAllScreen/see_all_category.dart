@@ -13,6 +13,8 @@ class SeeAllCategoryScreen extends StatefulWidget {
 class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
   final Stream<QuerySnapshot> _categoryStream =
       FirebaseFirestore.instance.collection('categories').snapshots();
+  String searchQuery = "";
+  bool isSearching = false;
 
   @override
   Widget build(BuildContext context) {
@@ -21,81 +23,178 @@ class _SeeAllCategoryScreenState extends State<SeeAllCategoryScreen> {
       color: Colors.white,
       fontWeight: FontWeight.w600,
     );
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Categories',
-          style: appbar,
-        ),
+        title: !isSearching
+            ? Text(
+                'Categories',
+                style: appbar,
+              )
+            : TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value.toLowerCase();
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search Categories',
+                  hintStyle: TextStyle(color: Colors.white),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(color: Colors.white),
+                autofocus: true,
+              ),
         backgroundColor: const Color(0xFF153167),
         iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _categoryStream,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('Something went wrong'));
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No categories found'));
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(10),
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              DocumentSnapshot document = snapshot.data!.docs[index];
-              Map<String, dynamic> data =
-                  document.data()! as Map<String, dynamic>;
-              return Container(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  tileColor: Colors.grey[200],
-                  leading: Container(
-                    width: 60,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(data['image']),
-                        fit: BoxFit.contain,
-                      ),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(8),
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    data['categoryName'],
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: const Text(
-                    'Explore Now',
-                    style: TextStyle(color: Colors.black45),
-                  ),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return CategoryProductScreen(
-                        categoryData: data,
-                      );
-                    }));
-                  },
-                ),
-              );
+        actions: [
+          IconButton(
+            icon: Icon(isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                isSearching = !isSearching;
+                if (!isSearching) {
+                  searchQuery = "";
+                }
+              });
             },
-          );
-        },
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFEFBF6), Color(0xFFFEFBF6)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
+          children: [
+            if (!isSearching)
+              SizedBox(height: 10), // Add space if not searching
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _categoryStream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Center(child: Text('Something went wrong'));
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text('No categories found'));
+                  }
+
+                  final filteredDocs = snapshot.data!.docs.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final categoryName = data['categoryName'] as String;
+                    return categoryName.toLowerCase().contains(searchQuery);
+                  }).toList();
+
+                  if (filteredDocs.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'Category not found',
+                        style: GoogleFonts.poppins(
+                          color: Colors.black54,
+                          fontSize: 16,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(6.0),
+                    itemCount: filteredDocs.length,
+                    itemBuilder: (context, index) {
+                      DocumentSnapshot document = filteredDocs[index];
+                      Map<String, dynamic> data =
+                          document.data()! as Map<String, dynamic>;
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          tileColor: Colors.white.withOpacity(0.8),
+                          leading: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 5,
+                                  offset: Offset(2, 2),
+                                ),
+                              ],
+                              image: DecorationImage(
+                                image: NetworkImage(data['image']),
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                gradient: const LinearGradient(
+                                  colors: [Colors.black54, Colors.transparent],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                ),
+                              ),
+                            ),
+                          ),
+                          title: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.blueAccent.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              data['categoryName'],
+                              style: GoogleFonts.poppins(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  const Shadow(
+                                    offset: Offset(1.5, 1.5),
+                                    blurRadius: 3,
+                                    color: Colors.black26,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Explore Now',
+                            style: GoogleFonts.poppins(
+                              color: Colors.black54,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return CategoryProductScreen(
+                                categoryData: data,
+                              );
+                            }));
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
