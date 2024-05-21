@@ -58,6 +58,7 @@ class _BookMarkScreenState extends ConsumerState<BookMarkScreen> {
         ),
         backgroundColor: const Color(0xFF0C2D57),
         elevation: 10,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: wishListItems.isEmpty
           ? Center(

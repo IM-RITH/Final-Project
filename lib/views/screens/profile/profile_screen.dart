@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyshop/controller/auth_controller.dart';
 import 'package:easyshop/views/screens/auth/login_screen.dart';
+import 'package:easyshop/views/screens/bookmark/bookmark_screen.dart';
 import 'package:easyshop/views/screens/profile/edit_profile.dart';
 import 'package:easyshop/views/screens/profile/my_order.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -137,11 +138,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.green,
                     backgroundColor: Color(0xFF102C57),
                   ),
-                  const ProfileMenuItem(
+                  ProfileMenuItem(
                     icon: FontAwesomeIcons.heartCircleCheck,
                     text: 'Wishlist',
                     color: Colors.yellow,
-                    backgroundColor: Color(0xFF102C57),
+                    backgroundColor: const Color(0xFF102C57),
+                    onTap: () {
+                      Get.to(() => const BookMarkScreen());
+                    },
                   ),
                   ProfileMenuItem(
                     icon: FontAwesomeIcons.rightFromBracket,
