@@ -196,7 +196,8 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
-          Navigator.pop(context);
+          // Navigator.pop(context);
+          Get.to(() => const CartScreen());
         },
         onError: (error) {
           log("onError: $error");
@@ -554,6 +555,7 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
                                   backgroundColor: Colors.green,
                                   colorText: Colors.white,
                                 );
+                                Get.to(() => const CartScreen());
                               } else if (_selectedPaymentMethod == 'stripe') {
                                 // Pay with Stripe
                                 // await _stripePaymentController.makePayment(

@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easyshop/controller/auth_controller.dart';
 import 'package:easyshop/views/screens/auth/login_screen.dart';
+import 'package:easyshop/views/screens/profile/edit_profile.dart';
 import 'package:easyshop/views/screens/profile/my_order.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthController _authController = AuthController();
+
   @override
   Widget build(BuildContext context) {
     CollectionReference buyers =
@@ -47,23 +50,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       // Background with gradient and blur
                       Container(
-                        height: 180,
-                        decoration: BoxDecoration(
+                        height: 200,
+                        decoration: const BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [
-                              const Color(0xFF153167),
-                              const Color(0xFF153167).withOpacity(0.7)
-                            ],
+                            colors: [Color(0xFF1F2544), Color(0xFF1F2544)],
                           ),
                         ),
                       ),
                       // Profile Image
                       Positioned(
-                        top: 100,
+                        top: 120,
                         child: Container(
                           decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(75),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.2),
@@ -72,13 +74,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ],
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
+                          child: ClipOval(
                             child: Image.network(
                               data['profileImage'],
                               width: 150,
                               height: 150,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  FontAwesomeIcons.user,
+                                  size: 150,
+                                  color: Colors.grey[300],
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -88,32 +96,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 80),
                   Text(
                     data['username'],
-                    style: GoogleFonts.roboto(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF153167),
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF102C57),
                     ),
                   ),
                   Text(
                     data['email'],
-                    style: GoogleFonts.roboto(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
                       color: Colors.grey[600],
                     ),
                   ),
                   const SizedBox(height: 20),
                   // Profile Menu Items
-                  const ProfileMenuItem(
-                    icon: Icons.edit,
+                  ProfileMenuItem(
+                    icon: FontAwesomeIcons.userPen,
                     text: 'Edit Profile',
-                    color: Colors.white,
-                    backgroundColor: Color(0xFF153167),
+                    color: Colors.blue,
+                    backgroundColor: const Color(0xFF102C57),
+                    onTap: () {
+                      Get.to(() => const EditProfileScreen());
+                    },
                   ),
                   ProfileMenuItem(
-                    icon: Icons.shopping_cart,
+                    icon: FontAwesomeIcons.cartShopping,
                     text: 'My Order',
-                    color: Colors.white,
-                    backgroundColor: const Color(0xFF153167),
+                    color: Colors.orange,
+                    backgroundColor: const Color(0xFF102C57),
                     onTap: () {
                       Get.to(
                         () => const MyOrderScreen(),
@@ -121,22 +132,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                   ),
                   const ProfileMenuItem(
-                    icon: Icons.history,
+                    icon: FontAwesomeIcons.clockRotateLeft,
                     text: 'Order History',
-                    color: Colors.white,
-                    backgroundColor: Color(0xFF153167),
+                    color: Colors.green,
+                    backgroundColor: Color(0xFF102C57),
                   ),
                   const ProfileMenuItem(
-                    icon: Icons.favorite,
+                    icon: FontAwesomeIcons.heartCircleCheck,
                     text: 'Wishlist',
-                    color: Colors.white,
-                    backgroundColor: Color(0xFF153167),
+                    color: Colors.yellow,
+                    backgroundColor: Color(0xFF102C57),
                   ),
                   ProfileMenuItem(
-                    icon: Icons.exit_to_app,
+                    icon: FontAwesomeIcons.rightFromBracket,
                     text: 'Log Out',
-                    color: Colors.white,
-                    backgroundColor: const Color(0xFF153167),
+                    color: Colors.red,
+                    backgroundColor: const Color(0xFF102C57),
                     onTap: () async {
                       Get.dialog(
                         const Center(child: CircularProgressIndicator()),
@@ -204,10 +215,10 @@ class ProfileMenuItem extends StatelessWidget {
           highlightColor: color.withOpacity(0.1),
           onTap: onTap,
           child: ListTile(
-            leading: Icon(icon, color: color),
+            leading: FaIcon(icon, color: color),
             title: Text(
               text,
-              style: GoogleFonts.roboto(
+              style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
