@@ -146,6 +146,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                   : '';
 
               return Card(
+                color: const Color(0xFF102C57),
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -181,7 +182,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black87,
+                                color: Colors.white,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -190,7 +191,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black54,
+                                color: Colors.white,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -248,6 +249,30 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   double rating = 0;
   final TextEditingController _reviewController = TextEditingController();
+  bool hasReviewed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfReviewed();
+  }
+
+  Future<void> _checkIfReviewed() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('productReview')
+        .where('productId', isEqualTo: widget.orderData['productId'])
+        .where('buyerId', isEqualTo: user.uid)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      setState(() {
+        hasReviewed = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -393,12 +418,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               ),
                               if (processingSteps.isNotEmpty &&
                                   currentStep < processingSteps.length)
-                                Text(
-                                  processingSteps[currentStep],
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black54,
+                                Flexible(
+                                  child: Text(
+                                    processingSteps[currentStep],
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black54,
+                                    ),
                                   ),
                                 ),
                             ],
@@ -426,7 +453,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           ),
                         ],
                       ),
-                      if (isDelivered)
+                      if (isDelivered && !hasReviewed)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -535,6 +562,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   _reviewController.clear();
                                   setState(() {
                                     rating = 0;
+                                    hasReviewed = true;
                                   });
                                   Future.delayed(const Duration(seconds: 3),
                                       () {
@@ -580,6 +608,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Widget _buildDetailRow(BuildContext context, String title, String value,
       [Color? valueColor]) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           '$title: ',
@@ -597,6 +626,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               fontWeight: FontWeight.w600,
               color: valueColor ?? Colors.black87,
             ),
+            overflow: TextOverflow.visible,
           ),
         ),
       ],
