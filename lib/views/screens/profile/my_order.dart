@@ -542,7 +542,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                 );
                                 await FirebaseFirestore.instance
                                     .collection("productReview")
-                                    .add({
+                                    .doc(widget.orderData["orderId"])
+                                    .set({
+                                  "reviewId": widget.orderData["orderId"],
                                   "productId": widget.orderData["productId"],
                                   "buyerName": widget.orderData["buyerName"],
                                   "buyerEmail": widget.orderData["buyerEmail"],
