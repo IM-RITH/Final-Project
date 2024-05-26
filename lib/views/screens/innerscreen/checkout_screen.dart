@@ -4,7 +4,6 @@ import 'package:easyshop/provider/cart_provider.dart';
 import 'package:easyshop/service/stripe_payment.dart';
 import 'package:easyshop/views/screens/main_screen/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
@@ -26,7 +25,7 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  String _selectedPaymentMethod = 'cod'; // Default to cash on delivery
+  String _selectedPaymentMethod = 'cod';
 
   // Define the payment methods available
   final List<Map<String, String>> paymentMethods = [
@@ -196,8 +195,6 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
-          // Navigator.pop(context);
-          Get.to(() => const CartScreen());
         },
         onError: (error) {
           log("onError: $error");
@@ -211,7 +208,6 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
             backgroundColor: Colors.red,
             colorText: Colors.white,
           );
-          Navigator.pop(context);
         },
         onCancel: () {
           log('cancelled:');
@@ -555,7 +551,6 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
                                   backgroundColor: Colors.green,
                                   colorText: Colors.white,
                                 );
-                                Get.to(() => const CartScreen());
                               } else if (_selectedPaymentMethod == 'stripe') {
                                 // Pay with Stripe
                                 // await _stripePaymentController.makePayment(

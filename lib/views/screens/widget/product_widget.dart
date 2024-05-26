@@ -4,17 +4,64 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ProductWidget extends ConsumerWidget {
+class ProductWidget extends ConsumerStatefulWidget {
   final dynamic productData;
 
   const ProductWidget({super.key, required this.productData});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProductWidget> createState() => _ProductWidgetState();
+}
+
+class _ProductWidgetState extends ConsumerState<ProductWidget> {
+  double averageRating = 0.0;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAverageRating();
+  }
+
+  Future<void> fetchAverageRating() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('productReview')
+          .where('productId', isEqualTo: widget.productData['productId'])
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        double totalRating = 0.0;
+        for (var doc in querySnapshot.docs) {
+          totalRating += doc['rating'];
+        }
+        setState(() {
+          averageRating = totalRating / querySnapshot.docs.length;
+        });
+      } else {
+        setState(() {
+          averageRating = 0.0; // No ratings yet
+        });
+      }
+    } catch (e) {
+      print("Failed to fetch average rating: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Check if the product is favorited
-    final isFavorited =
-        ref.watch(favoriteProvider).containsKey(productData['productId']);
+    final isFavorited = ref
+        .watch(favoriteProvider)
+        .containsKey(widget.productData['productId']);
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     if (userId == null) {
@@ -34,6 +81,7 @@ class ProductWidget extends ConsumerWidget {
         color: const Color(0xFFF3CA52),
         height: 1.3,
         fontWeight: FontWeight.w700);
+
     return Container(
       width: 150,
       height: 150,
@@ -71,7 +119,7 @@ class ProductWidget extends ConsumerWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: Image.network(
-                  productData['imageUrlList'][0],
+                  widget.productData['imageUrlList'][0],
                   fit: BoxFit.contain,
                   width: 110,
                   height: 110,
@@ -92,21 +140,22 @@ class ProductWidget extends ConsumerWidget {
                 child: InkWell(
                   onTap: () {
                     if (isFavorited) {
-                      ref
-                          .read(favoriteProvider.notifier)
-                          .removeFavorite(userId, productData['productId']);
+                      ref.read(favoriteProvider.notifier).removeFavorite(
+                          userId, widget.productData['productId']);
                     } else {
                       ref.read(favoriteProvider.notifier).addToFavorite(
                             userId,
-                            productData['productName'],
-                            double.tryParse(
-                                    productData['productPrice'].toString()) ??
-                                0.0,
-                            List<String>.from(productData['imageUrlList']),
-                            double.tryParse(productData['productDisPrice']
+                            widget.productData['productName'],
+                            double.tryParse(widget.productData['productPrice']
                                     .toString()) ??
                                 0.0,
-                            productData['productId'],
+                            List<String>.from(
+                                widget.productData['imageUrlList']),
+                            double.tryParse(widget
+                                    .productData['productDisPrice']
+                                    .toString()) ??
+                                0.0,
+                            widget.productData['productId'],
                           );
                       Get.snackbar(
                         'Favorites',
@@ -138,14 +187,18 @@ class ProductWidget extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.all(4),
               color: Colors.transparent,
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.star, color: Colors.yellow, size: 20),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Text(
-                    "N/A",
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    isLoading
+                        ? 'N/A'
+                        : averageRating == 0.0
+                            ? 'N/A'
+                            : averageRating.toStringAsFixed(1),
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ],
               ),
@@ -158,11 +211,11 @@ class ProductWidget extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  productData['productName'],
+                  widget.productData['productName'],
                   style: productName,
                 ),
                 Text(
-                  '\$${productData['productPrice']}',
+                  '\$${widget.productData['productPrice']}',
                   style: productPrice,
                 ),
               ],

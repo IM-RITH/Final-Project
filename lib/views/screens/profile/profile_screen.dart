@@ -4,6 +4,7 @@ import 'package:easyshop/views/screens/auth/login_screen.dart';
 import 'package:easyshop/views/screens/bookmark/bookmark_screen.dart';
 import 'package:easyshop/views/screens/profile/edit_profile.dart';
 import 'package:easyshop/views/screens/profile/my_order.dart';
+import 'package:easyshop/views/screens/profile/order_history.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -132,11 +133,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                   ),
-                  const ProfileMenuItem(
+                  ProfileMenuItem(
                     icon: FontAwesomeIcons.clockRotateLeft,
                     text: 'Order History',
                     color: Colors.green,
-                    backgroundColor: Color(0xFF102C57),
+                    backgroundColor: const Color(0xFF102C57),
+                    onTap: () {
+                      Get.to(() => const OrderHistoryScreen());
+                    },
                   ),
                   ProfileMenuItem(
                     icon: FontAwesomeIcons.heartCircleCheck,

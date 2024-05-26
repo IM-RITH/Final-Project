@@ -3,13 +3,14 @@ import 'package:easyshop/provider/cart_provider.dart';
 import 'package:easyshop/provider/favorite_provider.dart';
 import 'package:easyshop/provider/select_color.dart';
 import 'package:easyshop/provider/select_size_provider.dart';
+import 'package:easyshop/views/screens/SeeAllScreen/rating_review_screen.dart';
 import 'package:easyshop/views/screens/innerscreen/store_product.dart';
 import 'package:easyshop/views/screens/main_screen/utils/utils.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final dynamic productDetail;
@@ -17,7 +18,8 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
   const ProductDetailScreen({super.key, required this.productDetail});
 
   @override
-  _ProductDetailScreenState createState() => _ProductDetailScreenState();
+  ConsumerState<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
@@ -25,8 +27,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   int selectedImageIndex = 0;
   int? selectedSizeIndex;
   int? selectedColorIndex;
-  double averageRating = 4.5;
-  int totalReviews = 200;
+  double averageRating = 0;
+  int totalReviews = 0;
 
   @override
   void initState() {
@@ -40,6 +42,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       isBookmarked = ref
           .read(favoriteProvider)
           .containsKey(widget.productDetail['productId']);
+    }
+    fetchReviews();
+  }
+
+  Future<void> fetchReviews() async {
+    final reviewsSnapshot = await FirebaseFirestore.instance
+        .collection('productReview')
+        .where('productId', isEqualTo: widget.productDetail['productId'])
+        .get();
+
+    if (reviewsSnapshot.docs.isNotEmpty) {
+      double totalRating = 0;
+      for (var doc in reviewsSnapshot.docs) {
+        totalRating += doc['rating'];
+      }
+      setState(() {
+        totalReviews = reviewsSnapshot.docs.length;
+        averageRating = totalRating / totalReviews;
+      });
     }
   }
 
@@ -544,8 +565,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to reviews page
-                      print("Navigate to reviews page");
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return RatingReviewScreen(
+                              productId: widget.productDetail['productId']);
+                        },
+                      ));
                     },
                     child: Text(
                       'View All',

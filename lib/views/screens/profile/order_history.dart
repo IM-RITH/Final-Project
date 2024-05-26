@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
-class MyOrderScreen extends StatefulWidget {
-  const MyOrderScreen({super.key});
+class OrderHistoryScreen extends StatefulWidget {
+  const OrderHistoryScreen({super.key});
 
   @override
-  State<MyOrderScreen> createState() => _MyOrderScreenState();
+  State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
 }
 
-class _MyOrderScreenState extends State<MyOrderScreen> {
+class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   // Function to delete order from Firestore
@@ -21,14 +21,90 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
     await FirebaseFirestore.instance.collection('orders').doc(orderId).delete();
   }
 
+  // Function to show confirmation dialog
+  Future<void> _showDeleteConfirmationDialog(
+      BuildContext context, String orderId) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.warning, color: Colors.red),
+              const SizedBox(width: 10),
+              Text(
+                'Delete Order',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'Are you sure you want to delete this order?',
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.grey[200],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Delete',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onPressed: () async {
+                await _deleteOrder(orderId);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Stream<QuerySnapshot> _ordersStream = FirebaseFirestore.instance
+    final Stream<QuerySnapshot> ordersStream = FirebaseFirestore.instance
         .collection('orders')
         .where('buyerId', isEqualTo: auth.currentUser!.uid)
-        .where('delivered', isEqualTo: false)
+        .where('delivered', isEqualTo: true)
         .orderBy('date', descending: true)
         .snapshots();
+
     TextStyle appbarText = GoogleFonts.poppins(
       fontSize: 18,
       fontWeight: FontWeight.w500,
@@ -38,14 +114,14 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'My Orders',
+          'History Order',
           style: appbarText,
         ),
         backgroundColor: const Color(0xFF0C2D57),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _ordersStream,
+        stream: ordersStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return const Center(
@@ -144,12 +220,12 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                           ],
                         ),
                       ),
-                      // IconButton(
-                      //   icon: const Icon(Icons.delete, color: Colors.red),
-                      //   onPressed: () {
-                      //     _showDeleteConfirmationDialog(context, document.id);
-                      //   },
-                      // ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          _showDeleteConfirmationDialog(context, document.id);
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -408,7 +484,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               ),
                               onRatingUpdate: (value) {
                                 rating = value;
-                                // Add your rating update logic here
                               },
                             ),
                             const SizedBox(height: 16),
