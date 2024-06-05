@@ -10,6 +10,7 @@
         android:label="easyshop"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
+        android:theme="@style/LaunchTheme"
         android:enableOnBackInvokedCallback="true"
         >
 

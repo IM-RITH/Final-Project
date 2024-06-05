@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easyshop/controller/stripe_payment_controller.dart';
 import 'package:easyshop/provider/cart_provider.dart';
-import 'package:easyshop/service/stripe_payment.dart';
+import 'package:easyshop/service/payment.dart';
 import 'package:easyshop/views/screens/main_screen/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
+import 'package:flutterwave_standard/flutterwave.dart';
 import 'dart:developer';
 
 class CheckOutScreen extends ConsumerStatefulWidget {
@@ -30,7 +30,7 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
   // Define the payment methods available
   final List<Map<String, String>> paymentMethods = [
     {'method': 'cod', 'label': 'Cash on Delivery', 'icon': 'cash'},
-    {'method': 'stripe', 'label': 'Pay with Stripe', 'icon': 'card'},
+    {'method': 'card', 'label': 'Pay with Card', 'icon': 'card'},
     {'method': 'paypal', 'label': 'Pay with PayPal', 'icon': 'paypal'},
   ];
 
@@ -145,6 +145,75 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
     }
   }
 
+  // pay with flutterwave
+  Future<void> _handleFlutterwavePayment(double amount) async {
+    final Customer customer = Customer(
+      name: "FLW Developer",
+      phoneNumber: _phoneController.text,
+      email: (FirebaseAuth.instance.currentUser)!.email!,
+    );
+
+    final Flutterwave flutterwave = Flutterwave(
+      context: context,
+      publicKey: "FLWPUBK_TEST-221d38d79a2870a15fe6e7bb3960512d-X",
+      currency: "USD",
+      txRef: const Uuid().v4(),
+      amount: amount.toString(),
+      customer: customer,
+      paymentOptions: "card, payattitude, bank transfer",
+      customization: Customization(
+        title: "Test Payment",
+        description: "Payment for items in cart",
+        logo: "https://flutterwave.com/images/logo-colored.svg",
+      ),
+      isTestMode: true,
+      redirectUrl:
+          "https://www.google.com", // Replace with your actual redirect URL
+    );
+
+    final ChargeResponse response = await flutterwave.charge();
+    log("Response received: ${response.toJson()}");
+    if (response != null) {
+      if (response.status == "successful" || response.status == "success") {
+        log("Payment successful: ${response.toJson()}");
+        await _placeOrder();
+        setState(() {
+          _isLoading = false;
+        });
+        Get.snackbar(
+          'Payment Success',
+          'Your payment was successful.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        log("Payment failed: ${response.toJson()}");
+        setState(() {
+          _isLoading = false;
+        });
+        Get.snackbar(
+          'Payment Failed',
+          'Your payment was not successful. Please try again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      Get.snackbar(
+        'Payment Cancelled',
+        'Your payment was cancelled.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+    }
+  }
+
   Future<void> _handlePayPalPayment(double amount) async {
     setState(() {
       _isLoading = true;
@@ -195,6 +264,7 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
+          Navigator.pop(context);
         },
         onError: (error) {
           log("onError: $error");
@@ -208,6 +278,7 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
             backgroundColor: Colors.red,
             colorText: Colors.white,
           );
+          Navigator.pop(context);
         },
         onCancel: () {
           log('cancelled:');
@@ -551,20 +622,19 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
                                   backgroundColor: Colors.green,
                                   colorText: Colors.white,
                                 );
-                              } else if (_selectedPaymentMethod == 'stripe') {
-                                // Pay with Stripe
-                                // await _stripePaymentController.makePayment(
-                                //     context, totalAmountWithShipping);
+                              } else if (_selectedPaymentMethod == 'card') {
+                                await _handleFlutterwavePayment(
+                                    totalAmountWithShipping);
                                 setState(() {
                                   _isLoading = false;
                                 });
-                                Get.snackbar(
-                                  'Payment Success',
-                                  'Your payment was successful.',
-                                  snackPosition: SnackPosition.TOP,
-                                  backgroundColor: Colors.green,
-                                  colorText: Colors.white,
-                                );
+                                // Get.snackbar(
+                                //   'Payment Success',
+                                //   'Your payment was successful.',
+                                //   snackPosition: SnackPosition.TOP,
+                                //   backgroundColor: Colors.green,
+                                //   colorText: Colors.white,
+                                // );
                               } else if (_selectedPaymentMethod == 'paypal') {
                                 // Pay with PayPal
                                 await _handlePayPalPayment(

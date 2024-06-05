@@ -91,9 +91,9 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 2,
+                        spreadRadius: 1,
                         blurRadius: 5,
-                        offset: const Offset(0, 3),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),

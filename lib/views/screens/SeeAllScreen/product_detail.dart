@@ -59,7 +59,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       }
       setState(() {
         totalReviews = reviewsSnapshot.docs.length;
-        averageRating = totalRating / totalReviews;
+        averageRating =
+            double.parse((totalRating / totalReviews).toStringAsFixed(2));
       });
     }
   }
@@ -121,7 +122,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       fontWeight: FontWeight.bold,
     );
     TextStyle instockStyle = GoogleFonts.roboto(
-      fontSize: 18,
+      fontSize: 16,
       color: Colors.black38,
       fontWeight: FontWeight.w600,
     );
@@ -323,11 +324,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             : 'No Product Name',
                         style: productNameStyle,
                       ),
-                      Text(
-                        widget.productDetail != null
-                            ? widget.productDetail['instock'] ?? 'Out Of Stock'
-                            : 'No Stock',
-                        style: instockStyle,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: widget.productDetail != null &&
+                                  widget.productDetail['instock'] == 'In Stock'
+                              ? const Color(0xFF8A9418)
+                              : Colors.redAccent,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        child: Text(
+                          widget.productDetail != null
+                              ? widget.productDetail['instock'] ??
+                                  'Out Of Stock'
+                              : 'No Stock',
+                          style: instockStyle.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -347,6 +363,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ],
               ),
             ),
+
             Padding(
               padding:
                   const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
@@ -368,15 +385,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         color: Color(0xFF153448),
                       )
                     ],
-                  ),
-                  InkWell(
-                    onTap: () {
-                      print("size guide");
-                    },
-                    child: Text(
-                      'Size Guide',
-                      style: sizeGuideTextStyle,
-                    ),
                   ),
                 ],
               ),
@@ -416,12 +424,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 .selectSize("");
                           }
                         },
-                        backgroundColor: Colors.transparent,
+                        backgroundColor: isSelected
+                            ? const Color(0xFF4F7ED9)
+                            : const Color(0xFFE0E0E0),
                         elevation: 1,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 2),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(6),
                           side: BorderSide(
                               color:
                                   isSelected ? Colors.transparent : Colors.grey,
@@ -494,12 +504,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 .selectColor("");
                           }
                         },
-                        backgroundColor: Colors.transparent,
+                        backgroundColor: isSelectedColor
+                            ? const Color(0xFF4F7ED9)
+                            : const Color(0xFFE0E0E0),
                         elevation: 1,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 2),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(6),
                           side: BorderSide(
                               color: isSelectedColor
                                   ? Colors.transparent
@@ -512,6 +524,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ],
               ),
             ),
+
             // descrip header
             Padding(
               padding: const EdgeInsets.only(left: 10, top: 10),
@@ -537,7 +550,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               padding: const EdgeInsets.only(left: 10, right: 10),
               child: Text(
                 description,
-                style: descriptionTextStyle,
+                style: descriptionTextStyle.copyWith(
+                  height: 1.2,
+                  letterSpacing: 0.1,
+                ),
                 textAlign: TextAlign.justify,
               ),
             ),

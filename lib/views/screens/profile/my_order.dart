@@ -408,7 +408,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               ),
                               onRatingUpdate: (value) {
                                 rating = value;
-                                // Add your rating update logic here
                               },
                             ),
                             const SizedBox(height: 16),
