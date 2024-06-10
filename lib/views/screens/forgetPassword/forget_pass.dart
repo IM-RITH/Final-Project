@@ -47,7 +47,7 @@ class ForgotPasswordScreen extends StatelessWidget {
     );
 
     // Padding for the entire screen
-    const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: 20.0);
+    const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: 10.0);
 
     // input border
     OutlineInputBorder inputBorder = OutlineInputBorder(
@@ -98,118 +98,128 @@ class ForgotPasswordScreen extends StatelessWidget {
           child: Form(
             key: formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    Get.off(
-                      () => const LoginScreen(),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                  ),
-                  padding: const EdgeInsets.only(top: 10),
-                  alignment: Alignment.topLeft,
-                ),
-                Image.asset(
-                  'assets/forgetPassword/forgetpass1.gif',
-                  height: 250,
-                  width: 250,
-                ),
-                Text(
-                  'Forget Password',
-                  style: forgetpass,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Enter your email and we will send you a reset password link.',
-                  style: subforgetpass,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: emailController,
-                  style: inputText,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(
-                      Icons.mark_email_read_sharp,
-                      color: Colors.white,
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Get.off(
+                          () => const LoginScreen(),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
                     ),
-                    labelText: 'Email',
-                    labelStyle: labelStyle,
-                    enabledBorder: inputBorder,
-                    focusedBorder: focusedBorder,
-                    errorBorder: inputBorder,
-                    focusedErrorBorder: focusedBorder,
-                    errorStyle: errorStyle,
-                  ),
-                  validator: validateEmail,
+                  ],
                 ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (formKey.currentState!.validate()) {
-                      // Show a loading dialog
-                      Get.dialog(
-                        Dialog(
-                          backgroundColor: Colors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const CircularProgressIndicator(),
-                                const SizedBox(width: 20),
-                                Text(
-                                  'Sending email...',
-                                  style: submitTextStyle.copyWith(
-                                      color: Colors.blueGrey),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/forgetPassword/forgetpass1.gif',
+                          height: 250,
+                          width: 250,
+                        ),
+                        Text(
+                          'Forget Password',
+                          style: forgetpass,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Enter your email and we will send you a reset password link.',
+                          style: subforgetpass,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: emailController,
+                          style: inputText,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(
+                              Icons.mark_email_read_sharp,
+                              color: Colors.white,
+                            ),
+                            labelText: 'Email',
+                            labelStyle: labelStyle,
+                            enabledBorder: inputBorder,
+                            focusedBorder: focusedBorder,
+                            errorBorder: inputBorder,
+                            focusedErrorBorder: focusedBorder,
+                            errorStyle: errorStyle,
+                          ),
+                          validator: validateEmail,
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              // Show a loading dialog
+                              Get.dialog(
+                                Dialog(
+                                  backgroundColor: Colors.white,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const CircularProgressIndicator(),
+                                        const SizedBox(width: 20),
+                                        Text(
+                                          'Sending email...',
+                                          style: submitTextStyle.copyWith(
+                                              color: Colors.blueGrey),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ],
+                                barrierDismissible: false,
+                              );
+
+                              // Send password reset email
+                              String result = await authController
+                                  .sendPasswordResetEmail(emailController.text);
+
+                              // Close the loading dialog
+                              Get.back();
+
+                              // Use Get.snackbar to show the result
+                              if (result ==
+                                  "Password reset email sent. Please check your inbox.") {
+                                Get.to(() => SendEmailScreen(
+                                    email: emailController.text));
+                              } else {
+                                Get.snackbar(
+                                  "Error",
+                                  result,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white,
+                                );
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF4F7ED9),
+                            minimumSize: const Size(double.infinity, 60),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
+                          child: Text(
+                            'Submit',
+                            style: submitTextStyle,
+                          ),
                         ),
-                        barrierDismissible: false,
-                      );
-
-                      // Send password reset email
-                      String result = await authController
-                          .sendPasswordResetEmail(emailController.text);
-
-                      // Close the loading dialog
-                      Get.back();
-
-                      // Use Get.snackbar to show the result
-                      if (result ==
-                          "Password reset email sent. Please check your inbox.") {
-                        Get.to(
-                            () => SendEmailScreen(email: emailController.text));
-                      } else {
-                        Get.snackbar(
-                          "Error",
-                          result,
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4F7ED9),
-                    minimumSize: const Size(double.infinity, 60),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      ],
                     ),
-                  ),
-                  child: Text(
-                    'Submit',
-                    style: submitTextStyle,
                   ),
                 ),
               ],

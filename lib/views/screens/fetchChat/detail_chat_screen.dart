@@ -37,6 +37,20 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         .where('productId', isEqualTo: widget.productId)
         .orderBy('chatTimeStamp', descending: false)
         .snapshots();
+    _markMessagesAsRead();
+  }
+
+  Future<void> _markMessagesAsRead() async {
+    final querySnapshot = await db
+        .collection('chats')
+        .where('vendorId', isEqualTo: widget.vendorId)
+        .where('buyerId', isEqualTo: widget.buyerId)
+        .where('productId', isEqualTo: widget.productId)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.update({'isReadBuyer': true});
+    }
   }
 
   Future<void> _sendMessage() async {
@@ -187,14 +201,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      // Text(
-                                      //   data['customerName'] ?? 'Unknown',
-                                      //   style: GoogleFonts.roboto(
-                                      //     fontSize: 12,
-                                      //     color: Colors.grey[600],
-                                      //     fontWeight: FontWeight.w500,
-                                      //   ),
-                                      // ),
                                       const SizedBox(width: 5),
                                       Text(
                                         formattedTime,

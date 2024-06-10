@@ -28,18 +28,22 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
   Widget build(BuildContext context) {
     TextStyle appbarText = GoogleFonts.poppins(
       fontSize: 18,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w600,
       color: Colors.white,
     );
     TextStyle buyerNameText = GoogleFonts.poppins(
       fontSize: 18,
       fontWeight: FontWeight.w600,
-      color: Colors.black,
+      color: Colors.black87,
     );
     TextStyle reviewText = GoogleFonts.poppins(
       fontSize: 16,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w400,
       color: Colors.black87,
+    );
+    TextStyle dateText = GoogleFonts.poppins(
+      fontSize: 14,
+      color: Colors.grey,
     );
 
     return Scaffold(
@@ -75,25 +79,21 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
 
               return Card(
                 margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                elevation: 5,
+                elevation: 3,
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.shade50, Colors.blue.shade100],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey.withOpacity(0.3),
                         spreadRadius: 1,
                         blurRadius: 5,
-                        offset: const Offset(0, 4),
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
@@ -106,9 +106,9 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
                           backgroundColor: Colors.blueAccent,
                           radius: 25,
                           child: Text(
-                            review.buyerName[0],
+                            review.buyerName[0].toUpperCase(),
                             style: const TextStyle(
-                                color: Colors.white, fontSize: 20),
+                                color: Colors.white, fontSize: 24),
                           ),
                         ),
                         const SizedBox(width: 15),
@@ -135,10 +135,7 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
                               Text(
                                 DateFormat('dd-MM-yyyy')
                                     .format(review.timeStamp.toDate()),
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
+                                style: dateText,
                               ),
                               const SizedBox(height: 10),
                               Text(

@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easyshop/const/fcmkey.dart';
+import 'package:easyshop/fetch_access_token/fetch_access_token.dart';
 import 'package:easyshop/provider/cart_provider.dart';
 import 'package:easyshop/service/payment.dart';
 import 'package:easyshop/views/screens/main_screen/utils/utils.dart';
@@ -11,6 +15,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:flutterwave_standard/flutterwave.dart';
+import 'package:http/http.dart' as http;
 import 'dart:developer';
 
 class CheckOutScreen extends ConsumerStatefulWidget {
@@ -104,6 +109,8 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
     final _cartProvider = ref.read(cartProvider.notifier);
     final userDocs =
         await fireStore.collection('buyers').doc(auth.currentUser!.uid).get();
+    final String buyerName =
+        (userDocs.data() as Map<String, dynamic>)['username'];
 
     for (var key in _cartProvider.getCartItem.keys) {
       final item = _cartProvider.getCartItem[key];
@@ -120,7 +127,7 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
         'totalPrice':
             item.productQuantity * item.productDisPrice + item.shippingFees,
         'shippingFees': item.shippingFees,
-        'buyerName': (userDocs.data() as Map<String, dynamic>)['username'],
+        'buyerName': buyerName,
         'buyerEmail': (userDocs.data() as Map<String, dynamic>)['email'],
         'buyerId': auth.currentUser!.uid,
         'vendorId': vendorId,
@@ -133,6 +140,7 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
         'phone': _phoneController.text,
         'paymentMethod': _selectedPaymentMethod,
         'delivered': false,
+        'status': 'ended',
         'processing': [
           'Order placed',
           'Vendor accepted your order',
@@ -141,6 +149,13 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
           'Your product is near your location',
           'Your product has been delivered',
         ],
+      }).whenComplete(() {
+        // send push notification to seller about new order
+        sendNotificationToVendor(
+          vendorId.toString(),
+          orderId,
+          buyerName,
+        );
       });
     }
   }
@@ -296,6 +311,71 @@ class _CheckOutScreenState extends ConsumerState<CheckOutScreen> {
         },
       ),
     ));
+  }
+
+  // send notication to seller
+  void sendNotificationToVendor(
+      String vendorId, String orderId, String buyerName) async {
+    String vendorDeviceToken = "";
+    // Fetch vendor device token
+    DocumentSnapshot vendorSnapshot = await FirebaseFirestore.instance
+        .collection("vendors")
+        .doc(vendorId)
+        .get();
+    if (vendorSnapshot.exists) {
+      Map<String, dynamic>? vendorData =
+          vendorSnapshot.data() as Map<String, dynamic>?;
+      if (vendorData != null && vendorData["vendorDeviceToken"] != null) {
+        vendorDeviceToken = vendorData["vendorDeviceToken"].toString();
+      }
+    }
+
+    // Print the vendorDeviceToken
+    print("Vendor Device Token: $vendorDeviceToken");
+
+    // Use the access token generated from the Node.js script
+    final String accessToken = await fetchAccessToken();
+
+    // Define the notification payload
+    final Map<String, dynamic> notificationPayload = {
+      "message": {
+        "token": vendorDeviceToken,
+        "notification": {
+          "title": "New Order Placed",
+          "body":
+              "You have received a new order from $buyerName. Order ID: $orderId",
+        },
+        "data": {
+          "id": "0",
+          "buyerOrderId": orderId,
+          "buyerName": buyerName,
+        },
+        "android": {
+          "notification": {
+            "click_action": "FLUTTER_NOTIFICATION_CLICK",
+          }
+        },
+      }
+    };
+
+    // Send the notification
+    final response = await http.post(
+      Uri.parse(
+          'https://fcm.googleapis.com/v1/projects/easyshop-project-efff5/messages:send'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode(notificationPayload),
+    );
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      print('Notification sent successfully');
+    } else {
+      print('Failed to send notification: ${response.body}');
+    }
   }
 
   @override

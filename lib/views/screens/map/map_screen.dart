@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:easyshop/push_notifications/push_notification_system.dart';
 import 'package:easyshop/views/screens/main_screen/main_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -39,6 +41,20 @@ class _MapScreenState extends State<MapScreen> {
         Get.snackbar("Location Error", "Failed to get current location: $e");
       }
     });
+
+    // initialized notification
+    _initializePushNotifications();
+  }
+
+  void _initializePushNotifications() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if (user != null) {
+      String buyerId = user.uid;
+      PushNotificationSystem pushNotificationSystem = PushNotificationSystem();
+      await pushNotificationSystem.whenNotificationReceived(context);
+      await pushNotificationSystem.generateDeviceRecognitionToken(buyerId);
+    }
   }
 
   Future<Position> _determinePosition() async {
@@ -86,7 +102,7 @@ class _MapScreenState extends State<MapScreen> {
             padding: const EdgeInsets.only(bottom: 50),
             myLocationButtonEnabled: true,
             myLocationEnabled: true,
-            mapType: MapType.normal,
+            mapType: MapType.terrain,
             initialCameraPosition: _initialCameraPosition!,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);

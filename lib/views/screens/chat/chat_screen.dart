@@ -53,7 +53,6 @@ class _ChatScreenState extends State<ChatScreen> {
           'vendorId': widget.vendorId,
           'buyerId': widget.buyerId,
           'productId': widget.productId,
-          'productName': widget.productName,
           'customerName':
               (customerDoc.data() as Map<String, dynamic>)['username'] ??
                   'Unknown',
@@ -67,6 +66,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   '',
           'message': message,
           'senderId': FirebaseAuth.instance.currentUser!.uid,
+          'isReadBuyer': false,
+          'isReadVendor': false,
           'chatTimeStamp': DateTime.now(),
         });
         _messageController.clear();
@@ -99,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusScope.of(context).unfocus();
         },
         child: Column(
@@ -118,15 +119,15 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     );
                   }
-        
+
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-        
+
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(child: Text('No messages yet.'));
                   }
-        
+
                   return ListView(
                     children:
                         snapshot.data!.docs.map((DocumentSnapshot document) {
@@ -139,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       String formattedTime =
                           DateFormat('hh:mm a').format(chatTime);
                       String customerImage = data['storeImage'] ?? '';
-        
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 5.0),
@@ -230,7 +231,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Row(
                 children: [
                   Expanded(

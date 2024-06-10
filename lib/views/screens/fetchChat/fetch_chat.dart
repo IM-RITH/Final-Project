@@ -15,11 +15,17 @@ class FetchChat extends StatefulWidget {
 class _FetchChatState extends State<FetchChat> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  void markAsRead(String chatId) async {
-    await FirebaseFirestore.instance
+  markAsRead(String vendorId, String buyerId, String productId) async {
+    final querySnapshot = await FirebaseFirestore.instance
         .collection('chats')
-        .doc(chatId)
-        .update({'isRead': true});
+        .where('vendorId', isEqualTo: vendorId)
+        .where('buyerId', isEqualTo: buyerId)
+        .where('productId', isEqualTo: productId)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.update({'isReadBuyer': true});
+    }
   }
 
   @override
@@ -82,7 +88,7 @@ class _FetchChatState extends State<FetchChat> {
               String senderId = data['senderId'].toString();
               Timestamp timestamp = data['chatTimeStamp'] as Timestamp;
 
-              // Ensure we are only considering customer messages
+              // Ensure we are only considering vendor messages
               if (senderId != auth.currentUser!.uid) {
                 if (!latestMessages.containsKey(vendorId) ||
                     timestamp.compareTo(
@@ -100,9 +106,10 @@ class _FetchChatState extends State<FetchChat> {
                 Map<String, dynamic> data = latestMessages[vendorId]!;
 
                 return GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     // Mark as read
-                    markAsRead(snapshot.data!.docs[index].id);
+                    await markAsRead(data['vendorId'], auth.currentUser!.uid,
+                        data['productId']);
 
                     // Navigate to chat detail screen
                     Navigator.push(context, MaterialPageRoute(
@@ -116,8 +123,9 @@ class _FetchChatState extends State<FetchChat> {
                     ));
                   },
                   child: Card(
-                    color:
-                        (data['isRead'] ?? false) ? Colors.grey : Colors.white,
+                    color: (data['isReadBuyer'] ?? false)
+                        ? Colors.grey
+                        : Colors.white,
                     margin:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     shape: RoundedRectangleBorder(

@@ -1,0 +1,18 @@
+{
+  "name": "customer-access-token",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generateAccessToken.js",
+  "scripts": {
+    "start": "node generateAccessToken.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "google-auth-library": "^9.10.0",
+    "node-schedule": "^2.1.1"
+  }
+}

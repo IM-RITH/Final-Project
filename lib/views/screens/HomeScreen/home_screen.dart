@@ -11,6 +11,10 @@ import 'package:easyshop/views/screens/widget/search_widget.dart';
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
+  Future<void> _refreshContent() async {
+    await Future.delayed(const Duration(seconds: 2));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
@@ -22,21 +26,24 @@ class HomePage extends ConsumerWidget {
           const SearchWidget(),
           const SizedBox(height: 12.0),
 
-          // Scrollable part
-          const Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  BannerWidget(),
-                  SizedBox(height: 5.0),
-                  CategoryWidget(),
-                  SizedBox(height: 15.0),
-                  StoreWidget(),
-                  SizedBox(height: 10.0),
-                  TextWidget(),
-                  SizedBox(height: 1.0),
-                  RecommendProduct(),
-                ],
+          // Scrollable and refreshable part
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _refreshContent,
+              child: const SingleChildScrollView(
+                child: Column(
+                  children: [
+                    BannerWidget(),
+                    SizedBox(height: 5.0),
+                    CategoryWidget(),
+                    SizedBox(height: 15.0),
+                    StoreWidget(),
+                    SizedBox(height: 10.0),
+                    TextWidget(),
+                    SizedBox(height: 1.0),
+                    RecommendProduct(),
+                  ],
+                ),
               ),
             ),
           ),
